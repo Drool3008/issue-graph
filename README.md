@@ -17,6 +17,7 @@ A Claude Code plugin that reads a GitHub repo's issues and opens an interactive 
 - **Schedule view**: columns by dependency depth: Ready now, Next, Wave 3 and so on, plus a column for issues caught in a cycle. Toggle Show closed to add a Done column.
 - **Issue panel**: status, assignees, reviewers (from linked pull requests), labels, milestone, parent, age, linked PRs with review state, blocked-by and blocking lists, and how many issues closing it would free.
 - **Each sync**: a diff against the previous snapshot (new, closed, reopened, deleted or transferred, edited, dependencies added or removed, newly unblocked, PR changes), a created-vs-closed chart for the last 12 weeks, the open count across syncs, and Claude's summary with up to five recommended picks.
+- **Fetch scope**: each sync reads every open issue plus closed issues updated in the last 12 weeks (or since the previous sync), so large repos such as cli/cli sync in about two minutes.
 - **Suggested dependencies**: phrases like "blocked by #12" or "depends on #8" in issue bodies are offered to Claude, which keeps only clear ones. They appear as dashed arrows and are never written to GitHub.
 
 ## Requirements

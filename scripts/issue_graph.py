@@ -28,7 +28,10 @@ PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = PLUGIN_ROOT / "assets" / "template.html"
 CYTOSCAPE = PLUGIN_ROOT / "assets" / "vendor" / "cytoscape.min.js"
 
-PAGE_SIZE = 50
+PAGE_SIZE = 100
+# Closed issues are fetched only if updated within this window (or since the
+# previous sync, if that is older), so big repos sync in about a minute.
+CLOSED_WINDOW_DAYS = 84  # matches the 12-week created-vs-closed chart
 
 ISSUE_FIELDS_CORE = """
         number title url state stateReason createdAt updatedAt closedAt body
@@ -64,7 +67,7 @@ query($owner: String!, $name: String!, $cursor: String) {
     nameWithOwner
     isPrivate
     url
-    issues(first: %d, after: $cursor, orderBy: {field: CREATED_AT, direction: ASC}) {
+    issues(first: %d, after: $cursor, %s, orderBy: {field: CREATED_AT, direction: ASC}) {
       totalCount
       pageInfo { hasNextPage endCursor }
       nodes {
@@ -144,10 +147,9 @@ def resolve_repo(repo: str | None) -> str:
     return out
 
 
-def fetch_all(repo: str) -> tuple[dict, list[dict], bool]:
+def fetch_issues(repo: str, issue_filter: str, fields: str, label: str) -> tuple[dict, list[dict]]:
     owner, name = repo.split("/", 1)
-    deps_supported = True
-    query = QUERY_TEMPLATE % (PAGE_SIZE, ISSUE_FIELDS_CORE + ISSUE_FIELDS_DEPS)
+    query = QUERY_TEMPLATE % (PAGE_SIZE, issue_filter, fields)
     nodes: list[dict] = []
     cursor = None
     meta = None
@@ -155,33 +157,48 @@ def fetch_all(repo: str) -> tuple[dict, list[dict], bool]:
         try:
             data = graphql(query, {"owner": owner, "name": name, "cursor": cursor})
         except SyncError as e:
-            msg = str(e)
-            if deps_supported and re.search(r"blockedBy|blocking|parent", msg) and "doesn't exist" in msg:
-                # Older GitHub Enterprise Server without issue dependencies.
-                deps_supported = False
-                query = QUERY_TEMPLATE % (PAGE_SIZE, ISSUE_FIELDS_CORE)
-                nodes, cursor = [], None
-                continue
-            if "Could not resolve to a Repository" in msg:
+            if "Could not resolve to a Repository" in str(e):
                 raise SyncError(f"Repository {repo} was not found, or your gh account cannot read it.")
             raise
         repository = data.get("repository")
         if repository is None:
             raise SyncError(f"Repository {repo} was not found, or your gh account cannot read it.")
+        conn = repository["issues"]
         if meta is None:
             meta = {
                 "repo": repository["nameWithOwner"],
                 "url": repository["url"],
                 "private": repository["isPrivate"],
                 "viewer": (data.get("viewer") or {}).get("login"),
-                "total_reported": repository["issues"]["totalCount"],
+                "total_reported": conn["totalCount"],
             }
-        conn = repository["issues"]
         nodes.extend(n for n in conn["nodes"] if n)
+        # Progress goes to stderr so stdout stays a single JSON digest.
+        print(f"{label}: {len(nodes)}/{meta['total_reported']}", file=sys.stderr, flush=True)
         if not conn["pageInfo"]["hasNextPage"]:
             break
         cursor = conn["pageInfo"]["endCursor"]
-    return meta, nodes, deps_supported
+    return meta, nodes
+
+
+def fetch_all(repo: str, closed_since: dt.datetime) -> tuple[dict, list[dict], bool]:
+    """All open issues, plus closed issues updated since `closed_since`."""
+    since = closed_since.isoformat().replace("+00:00", "Z")
+    filters = [("states: OPEN", "open issues"),
+               (f'states: CLOSED, filterBy: {{since: "{since}"}}', "recently closed issues")]
+    for deps_supported in (True, False):
+        fields = ISSUE_FIELDS_CORE + (ISSUE_FIELDS_DEPS if deps_supported else "")
+        try:
+            meta, nodes = fetch_issues(repo, filters[0][0], fields, filters[0][1])
+            _, closed = fetch_issues(repo, filters[1][0], fields, filters[1][1])
+        except SyncError as e:
+            msg = str(e)
+            if deps_supported and re.search(r"blockedBy|blocking|parent", msg) and "doesn't exist" in msg:
+                # Older GitHub Enterprise Server without issue dependencies.
+                continue
+            raise
+        return meta, nodes + closed, deps_supported
+    raise SyncError("Could not fetch issues.")
 
 
 # --------------------------------------------------------------------- normalize
@@ -443,8 +460,11 @@ def diff(prev: dict | None, cur: dict) -> dict:
            "deps_added": [], "deps_removed": [], "newly_unblocked": [], "newly_blocked": [], "pr_changes": []}
     for n in sorted(set(c) - set(p)):
         out["created"].append({"n": n, "title": c[n]["title"]})
+    # Closed issues age out of the fetch window, so only a vanished open issue
+    # (deleted or transferred) counts as missing.
     for n in sorted(set(p) - set(c)):
-        out["missing"].append({"n": n, "title": p[n]["title"]})
+        if p[n]["state"] == "open":
+            out["missing"].append({"n": n, "title": p[n]["title"]})
     for n in sorted(set(p) & set(c)):
         a, b = p[n], c[n]
         if a["state"] == "open" and b["state"] == "closed":
@@ -479,8 +499,14 @@ def diff(prev: dict | None, cur: dict) -> dict:
                 out["pr_changes"].append({"issue": n, "pr": pr["n"], "change": f"review {old.get('decision') or 'none'} → {pr.get('decision') or 'none'}"})
     pe = {tuple(e) for e in prev["edges"]}
     ce = {tuple(e) for e in cur["edges"]}
-    out["deps_added"] = [{"blocker": a, "blocked": b} for a, b in sorted(ce - pe)]
-    out["deps_removed"] = [{"blocker": a, "blocked": b} for a, b in sorted(pe - ce)]
+    # Edges to closed issues come and go as those issues enter or leave the
+    # fetch window; that is not a real dependency change.
+    def reentered(n):
+        return n not in p and c[n]["state"] == "closed"
+    out["deps_added"] = [{"blocker": a, "blocked": b} for a, b in sorted(ce - pe)
+                         if not (reentered(a) or reentered(b))]
+    out["deps_removed"] = [{"blocker": a, "blocked": b} for a, b in sorted(pe - ce)
+                           if a in c and b in c]
     out["has_changes"] = any(out[k] for k in out if isinstance(out[k], list))
     return out
 
@@ -534,7 +560,12 @@ def cmd_sync(args) -> int:
             if raw.get("now"):
                 now = dt.datetime.fromisoformat(raw["now"].replace("Z", "+00:00"))
         else:
-            meta, nodes, deps_supported = fetch_all(repo)
+            closed_since = now - dt.timedelta(days=CLOSED_WINDOW_DAYS)
+            prev_meta = (load_json(repo_dir(data_dir, repo) / "snapshot.json") or {}).get("meta") or {}
+            if prev_meta.get("fetched_at"):
+                prev_fetch = dt.datetime.fromisoformat(prev_meta["fetched_at"].replace("Z", "+00:00"))
+                closed_since = min(closed_since, prev_fetch)
+            meta, nodes, deps_supported = fetch_all(repo, closed_since)
     except SyncError as e:
         print(json.dumps({"ok": False, "error": str(e)}, indent=1))
         return 1

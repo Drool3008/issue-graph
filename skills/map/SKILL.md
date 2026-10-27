@@ -21,7 +21,9 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/issue_graph.py sync --data-dir ${CLAUDE_PL
 
 (On Windows use `python` if `python3` is missing.)
 
-The script prints one JSON digest. If `"ok": false`, tell the user the `error` in one or two plain sentences and stop. Common fixes: install the GitHub CLI, run `gh auth login`, check the repo name, or for a private repo make sure the account can read it.
+Large repos take a minute or more, so run this Bash call with `timeout: 600000`. Progress lines on stderr are normal. It fetches every open issue plus closed issues updated in the last 12 weeks (or since the previous sync).
+
+The script prints one JSON digest. If `"ok": false`, or the command times out or prints no JSON, tell the user what happened in one or two plain sentences and stop. Do not fall back to `gh issue list`, `gh api` or any other way of fetching issues, and do not describe the repo from memory. Common fixes: install the GitHub CLI, run `gh auth login`, check the repo name, or for a private repo make sure the account can read it.
 
 Do not open `snapshot.json` or page through issues yourself; the digest has what you need. Open the snapshot only if the user later asks about one specific issue.
 

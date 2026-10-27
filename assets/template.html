@@ -221,7 +221,7 @@ document.getElementById("fetched").textContent = "synced " + NOW.toLocaleString(
     ["Ready", open.filter(i => i.status === "ready" && !i.in_cycle).length],
     ["Blocked", open.filter(i => i.status === "blocked").length],
     ["In review", open.filter(i => i.in_progress).length],
-    ["Closed", DATA.issues.length - open.length],
+    ["Closed · 12 wk", DATA.issues.length - open.length],
   ];
   document.getElementById("counts").innerHTML = c.map(([k, v]) => `<div class="count"><b>${v}</b><span>${k}</span></div>`).join("");
 })();
