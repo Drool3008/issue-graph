@@ -1,0 +1,12 @@
+{
+  "name": "dhawal-plugins",
+  "description": "Claude Code plugins by Dhawal",
+  "owner": { "name": "Dhawal" },
+  "plugins": [
+    {
+      "name": "issue-graph",
+      "source": "./",
+      "description": "Read-only dependency graph and schedule view of a GitHub repo's issues."
+    }
+  ]
+}

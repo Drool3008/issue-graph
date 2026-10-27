@@ -1,0 +1,12 @@
+{
+  "name": "issue-graph",
+  "description": "Read-only dependency graph and schedule view of a GitHub repo's issues, with a change summary and next-pick recommendations on every sync.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Dhawal"
+  },
+  "homepage": "https://github.com/Drool3008/issue-graph",
+  "repository": "https://github.com/Drool3008/issue-graph",
+  "license": "MIT",
+  "keywords": ["github", "issues", "dependencies", "blocked-by", "graph", "planning"]
+}
