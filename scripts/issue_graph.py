@@ -401,14 +401,22 @@ def analyse(snap: dict, viewer: str | None, now: dt.datetime) -> None:
         desc_cache[v] = seen
         return seen
 
+    # An issue with sub-issues is an epic: a container, not work to pick. One without stays a normal issue.
     for i in issues.values():
         i["open_blockers"] = [b for b in i["blocked_by"] if issues[b]["state"] == "open"]
+        i["children"] = []
+    for n, i in issues.items():
+        if i.get("parent") in issues:
+            issues[i["parent"]]["children"].append(n)
 
     for n, i in issues.items():
         open_blockers = i["open_blockers"]
         if i["state"] != "open":
             i["status"] = "closed"
             i["layer"] = None
+        elif i["children"]:
+            i["status"] = "epic"
+            i["layer"] = layer_c[comp_of[n]]
         else:
             i["status"] = "blocked" if open_blockers else "ready"
             i["layer"] = layer_c[comp_of[n]]
@@ -592,6 +600,7 @@ def cmd_sync(args) -> int:
         "closed": len(issues) - len(open_issues),
         "ready": sum(1 for i in open_issues if i["status"] == "ready"),
         "blocked": sum(1 for i in open_issues if i["status"] == "blocked"),
+        "epics": sum(1 for i in open_issues if i["status"] == "epic"),
         "in_progress": sum(1 for i in open_issues if i["in_progress"]),
         "dependencies": len(cur["edges"]),
         "cycles": len(cur["cycles"]),
@@ -612,7 +621,7 @@ def cmd_sync(args) -> int:
 
     ready = sorted((i for i in open_issues if i["status"] == "ready" and not i["in_cycle"]),
                    key=lambda i: (-i["score"], -i["unblocks_total"], i["n"]))
-    bottlenecks = sorted((i for i in open_issues if i["unblocks_total"] > 0),
+    bottlenecks = sorted((i for i in open_issues if i["unblocks_total"] > 0 and i["status"] != "epic"),
                          key=lambda i: (-i["unblocks_total"], i["n"]))[:5]
     stale = sorted((i for i in open_issues if i["idle_days"] >= 60), key=lambda i: -i["idle_days"])[:5]
 
@@ -661,9 +670,12 @@ def cmd_render(args) -> int:
         try:
             loaded = json.loads(notes_path.read_text(encoding="utf-8"))
             notes["summary"] = str(loaded.get("summary", "")).strip()
+            epics = {i.get("parent") for i in snap["issues"].values()}
             for p in loaded.get("picks", []) or []:
                 n = int(p.get("number", -1))
-                if n in snap["issues"] and snap["issues"][n]["state"] == "open":
+                if n in epics:
+                    warnings.append(f"pick #{n} dropped: it is an epic with sub-issues; pick one of its sub-issues")
+                elif n in snap["issues"] and snap["issues"][n]["state"] == "open":
                     notes["picks"].append({"n": n, "why": str(p.get("why", "")).strip()})
                 else:
                     warnings.append(f"pick #{n} dropped: not an open issue")

@@ -111,11 +111,19 @@
   .pr .top { display: flex; gap: 8px; align-items: baseline; }
   .pr .top a { font-family: var(--mono); font-weight: 600; text-decoration: none; }
   .pr .meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
-  .impact { display: flex; gap: 22px; }
+  .impact { display: flex; flex-wrap: wrap; gap: 10px 22px; }
   .impact b { font: 600 18px var(--mono); display: block; }
   .impact span { color: var(--muted); font-size: 11.5px; }
   .warn { border: 1px solid var(--red-strong); color: var(--red); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; }
   .changed { border-left: 2px solid var(--text); padding-left: 10px; }
+  .path-btn { margin-top: 12px; }
+  .row.done { opacity: .45; }
+  .bar { height: 4px; background: var(--line); border-radius: 2px; margin: 0 0 10px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--text); }
+  .pill.epic { border-style: dashed; color: var(--text); }
+  .sw.epic { background: #141416; border: 1.5px dashed #d8d8d8; }
+  .step { font: 600 10.5px var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 12px 0 2px; }
+  .step:first-of-type { margin-top: 0; }
 
   .chart { width: 100%; height: auto; display: block; }
   .chart text { fill: var(--muted); font: 10px var(--mono); }
@@ -165,6 +173,7 @@
         <div><span class="sw blocked"></span>Blocked</div>
         <div><span class="sw closed"></span>Closed</div>
         <div><span class="sw cycle"></span>In a cycle</div>
+        <div id="lgEpic" hidden><span class="sw epic"></span>Epic with its own dependencies</div>
         <div><span class="ln idle"></span>Dependency</div>
         <div><span class="ln out"></span>Blocks (selected)</div>
         <div><span class="ln in"></span>Blocked by (selected)</div>
@@ -195,7 +204,7 @@ const ch = DATA.changes || {};
 // Suggested edges: Claude's confirmed suggestions only (text hints are in the digest, not drawn unless Claude kept them).
 const suggested = (notes.suggested_edges || []).filter(s => byN.has(s.blocker) && byN.has(s.blocked));
 
-const state = { view: "graph", showClosed: false, mine: false, selected: null };
+const state = { view: "graph", showClosed: false, mine: false, selected: null, path: null };
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const trunc = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
@@ -208,29 +217,43 @@ function ago(iso) {
   if (d < 540) return Math.round(d / 30) + " months ago";
   return Math.round(d / 365) + " years ago";
 }
-const statusText = i => i.status === "closed" ? "closed" : i.in_cycle ? "cycle" : i.status;
+// Epics: issues with sub-issues are containers, not work. Derived from `parent` so older snapshots work too.
+const kidsOf = new Map();
+DATA.issues.forEach(i => { if (i.parent && byN.has(i.parent)) (kidsOf.get(i.parent) || kidsOf.set(i.parent, []).get(i.parent)).push(i.n); });
+const isEpic = i => kidsOf.has(i.n);
+const hasDeps = i => i.blocked_by.length > 0 || i.blocking.length > 0;
+const isWork = i => i.state === "open" && !isEpic(i);
+const statusText = i => i.status === "closed" ? "closed" : isEpic(i) ? "epic" : i.in_cycle ? "cycle" : i.status;
+function epicProgress(i) {
+  const kids = kidsOf.get(i.n).map(k => byN.get(k));
+  return { kids, done: kids.filter(k => k.state !== "open").length };
+}
 
 // ---------------------------------------------------------------- header
 document.getElementById("repoName").textContent = meta.repo;
 document.getElementById("visibility").textContent = meta.private ? "private" : "public";
 document.getElementById("fetched").textContent = "synced " + NOW.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 (function counts() {
-  const open = DATA.issues.filter(i => i.state === "open");
+  const open = DATA.issues.filter(isWork);
+  const epics = DATA.issues.filter(i => i.state === "open" && isEpic(i)).length;
   const c = [
     ["Open", open.length],
     ["Ready", open.filter(i => i.status === "ready" && !i.in_cycle).length],
     ["Blocked", open.filter(i => i.status === "blocked").length],
+    ...(epics ? [["Epics", epics]] : []),
     ["In review", open.filter(i => i.in_progress).length],
-    ["Closed · 12 wk", DATA.issues.length - open.length],
+    ["Closed · 12 wk", DATA.issues.filter(i => i.state !== "open").length],
   ];
   document.getElementById("counts").innerHTML = c.map(([k, v]) => `<div class="count"><b>${v}</b><span>${k}</span></div>`).join("");
 })();
 if (viewer && DATA.issues.some(i => i.assignees.includes(viewer))) document.getElementById("tMine").hidden = false;
+if (DATA.issues.some(i => isEpic(i) && hasDeps(i))) document.getElementById("lgEpic").hidden = false;
 
 // ---------------------------------------------------------------- graph
 function nodeClasses(i) {
   const c = [i.state === "open" ? (i.status === "ready" ? "ready" : "blocked") : "closed"];
   if (i.in_cycle) c.push("cycle");
+  if (isEpic(i) && i.state === "open") c.push("epic");
   if (i.in_progress) c.push("progress");
   if (pickSet.has(i.n)) c.push("pick");
   return c.join(" ");
@@ -262,6 +285,7 @@ const cy = cytoscape({
     { selector: "node.ready", style: { "background-color": "#f2f2f2", color: "#0b0b0c", "border-color": "#f2f2f2" } },
     { selector: "node.closed", style: { "background-color": "#232327", color: "#7d7d84", "border-color": "#232327" } },
     { selector: "node.cycle", style: { "border-color": "#ff5f5f", "border-width": 2 } },
+    { selector: "node.epic", style: { "border-style": "dashed", "background-color": "#141416", color: "#e6e6e8", "border-color": "#cfcfd3" } },
     { selector: "node.progress", style: { "border-style": "double", "border-width": 4 } },
     { selector: "node.pick", style: { "underlay-color": "#ffffff", "underlay-opacity": 0.16, "underlay-padding": 7, "underlay-shape": "round-rectangle" } },
     { selector: "node.header", style: {
@@ -281,6 +305,7 @@ const cy = cytoscape({
     { selector: "edge.in", style: { width: 2.4, "line-color": "#ffffff", "target-arrow-color": "#ffffff", "z-index": 9 } },
     { selector: "edge.out", style: { width: 2.4, "line-color": "#ff8f8f", "target-arrow-color": "#ff8f8f", "z-index": 9 } },
     { selector: ".faded", style: { opacity: 0.1, "underlay-opacity": 0 } },
+    { selector: ".done-path", style: { opacity: 0.38 } },
     { selector: ".gone", style: { display: "none" } },
   ],
 });
@@ -288,13 +313,60 @@ const cy = cytoscape({
 function visibleIssue(i) {
   return state.showClosed || i.state === "open";
 }
+// An epic gets its own node only when it carries dependencies itself; otherwise its sub-issues stand in for it.
+const onCanvas = i => !isEpic(i) || hasDeps(i);
+// Closed issues on the active unlock path are shown (dimmed) even when "Show closed" is off.
+function shownIssue(i) {
+  return onCanvas(i) && (visibleIssue(i) || (state.path !== null && pathSet().has(i.n)));
+}
 function applyVisibility() {
   cy.batch(() => {
     cy.nodes().not(".header").forEach(n => {
       const i = byN.get(n.data("n"));
-      n.toggleClass("gone", !visibleIssue(i));
+      n.toggleClass("gone", !shownIssue(i));
     });
   });
+}
+
+// --- Unlock path: every declared blocker of an issue, transitively, open or closed.
+// An epic is finished by its sub-issues, so it depends on them as well as on its own blockers.
+const needs = i => isEpic(i) ? [...i.blocked_by, ...kidsOf.get(i.n)] : i.blocked_by;
+const pathCache = new Map();
+function pathTo(n) {
+  if (pathCache.has(n)) return pathCache.get(n);
+  const set = new Set([n]), stack = [n];
+  while (stack.length) {
+    const i = byN.get(stack.pop());
+    (i ? needs(i) : []).forEach(b => { if (byN.has(b) && !set.has(b)) { set.add(b); stack.push(b); } });
+  }
+  pathCache.set(n, set);
+  return set;
+}
+function pathSet() { return state.path === null ? new Set() : pathTo(state.path); }
+// Steps: an open issue's step is one more than the latest open blocker it waits on. Step 0 can start now.
+// Epics are not work, so they add no step of their own and are left out of the list.
+function pathSteps(n) {
+  const set = pathTo(n), step = new Map(), busy = new Set();
+  const walk = x => {
+    if (step.has(x)) return step.get(x);
+    if (busy.has(x)) return 0; // cycle: stop here
+    busy.add(x);
+    let s = 0;
+    needs(byN.get(x)).forEach(b => {
+      const bi = byN.get(b);
+      if (set.has(b) && bi.state === "open") s = Math.max(s, walk(b) + (isEpic(bi) ? 0 : 1));
+    });
+    busy.delete(x);
+    step.set(x, s);
+    return s;
+  };
+  const open = [], done = [];
+  set.forEach(x => { const i = byN.get(x); if (!isEpic(i)) (i.state === "open" ? open : done).push(i); });
+  const steps = [];
+  open.forEach(i => { const s = walk(i.n); (steps[s] = steps[s] || []).push(i); });
+  steps.forEach(g => g && g.sort((a, b) => sortKey(a) - sortKey(b)));
+  done.sort((a, b) => a.n - b.n);
+  return { steps: steps.filter(Boolean), done };
 }
 
 // --- Graph layout: force layout for connected issues, compact grid for loners.
@@ -329,7 +401,7 @@ function layoutSchedule() {
   const COLW = 190, ROWH = 56, MAXROWS = 22;
   const groups = new Map();
   const add = (key, title, i) => { if (!groups.has(key)) groups.set(key, { title, items: [] }); groups.get(key).items.push(i); };
-  DATA.issues.filter(visibleIssue).forEach(i => {
+  DATA.issues.filter(shownIssue).forEach(i => {
     if (i.state !== "open") add(-1, "Done", i);
     else if (i.in_cycle) add(9999, "Cycle — needs untangling", i);
     else add(i.layer, i.layer === 0 ? "Ready now" : i.layer === 1 ? "Next" : "Wave " + (i.layer + 1), i);
@@ -351,12 +423,14 @@ function layoutSchedule() {
 function relayout() {
   applyVisibility();
   if (state.view === "graph") layoutGraph(); else layoutSchedule();
-  if (state.selected && byN.get(state.selected) && visibleIssue(byN.get(state.selected))) {
+  if (state.path !== null) {
+    highlightPath(state.path);
+  } else if (state.selected && byN.get(state.selected) && visibleIssue(byN.get(state.selected))) {
     highlight(state.selected);
   } else {
     clearHighlight();
   }
-  cy.fit(cy.nodes().not(".gone"), 40);
+  cy.fit(state.path !== null ? cy.nodes().not(".faded, .header, .gone") : cy.nodes().not(".gone"), 40);
   labelMode();
   applyMine();
 }
@@ -364,14 +438,34 @@ function relayout() {
 // --- Highlight rules
 function clearHighlight() {
   cy.batch(() => {
-    cy.elements().removeClass("faded in out");
+    cy.elements().removeClass("faded in out done-path");
     cy.nodes().unselect();
   });
 }
+// The nodes that stand for an issue on the canvas: itself, or for an epic its sub-issues too.
+function standIns(n) {
+  const i = byN.get(n);
+  const ids = isEpic(i) ? [n, ...kidsOf.get(n)] : [n];
+  return cy.collection(ids.map(x => cy.getElementById("i" + x))).not(".gone");
+}
 function highlight(n) {
   const node = cy.getElementById("i" + n);
+  if (isEpic(byN.get(n))) {
+    // Epic: light up its sub-issues and the dependencies between them.
+    const nodes = standIns(n);
+    cy.batch(() => {
+      cy.elements().removeClass("in out done-path");
+      const edges = nodes.edgesWith(nodes).not(".suggested").addClass("in");
+      const keep = nodes.union(edges).union(cy.nodes(".header"));
+      cy.elements().not(keep).addClass("faded");
+      keep.removeClass("faded");
+      cy.nodes().unselect();
+      nodes.select();
+    });
+    return;
+  }
   cy.batch(() => {
-    cy.elements().removeClass("in out");
+    cy.elements().removeClass("in out done-path");
     const outE = node.outgoers("edge").filter(e => !e.target().hasClass("gone"));
     const inE = node.incomers("edge").filter(e => !e.source().hasClass("gone"));
     outE.addClass("out");
@@ -382,6 +476,43 @@ function highlight(n) {
     cy.nodes().unselect();
     node.select();
   });
+}
+// Path mode: the issue plus everything it waits on, with the declared edges between them. No downstream edges.
+function highlightPath(n) {
+  const set = pathTo(n);
+  const inSet = nd => set.has(nd.data("n"));
+  cy.batch(() => {
+    cy.elements().removeClass("in out done-path");
+    const nodes = cy.nodes().not(".header").filter(inSet);
+    const edges = cy.edges().not(".suggested").filter(e => inSet(e.source()) && inSet(e.target()));
+    edges.addClass("in");
+    nodes.filter(nd => byN.get(nd.data("n")).state !== "open").addClass("done-path");
+    edges.filter(e => byN.get(e.source().data("n")).state !== "open").addClass("done-path");
+    const keep = nodes.union(edges).union(cy.nodes(".header"));
+    cy.elements().not(keep).addClass("faded");
+    keep.removeClass("faded");
+    cy.nodes().unselect();
+    cy.getElementById("i" + n).select();
+  });
+}
+// Re-layout only when the path brings in (or drops) closed issues that "Show closed" hides.
+const pathHidesSome = n => [...pathTo(n)].some(x => onCanvas(byN.get(x)) && !visibleIssue(byN.get(x)));
+function showPath(n) {
+  state.path = n;
+  state.selected = n;
+  if (pathHidesSome(n)) relayout();
+  else {
+    highlightPath(n);
+    cy.animate({ fit: { eles: cy.nodes().not(".faded, .header, .gone"), padding: 60 } }, { duration: 250 });
+  }
+  renderPath(n);
+}
+function exitPath() {
+  if (state.path === null) return;
+  const n = state.path;
+  state.path = null;
+  if (pathHidesSome(n)) relayout();
+  else clearHighlight();
 }
 function applyMine() {
   if (!state.mine || state.selected) return;
@@ -397,14 +528,17 @@ function applyMine() {
 function select(n, center) {
   const i = byN.get(n);
   if (!i) return;
+  exitPath();
   if (!visibleIssue(i)) { state.showClosed = true; setPressed("tClosed", true); relayout(); }
   state.selected = n;
   highlight(n);
   renderIssue(i);
-  if (center) cy.animate({ center: { eles: cy.getElementById("i" + n) }, zoom: Math.max(cy.zoom(), 0.9) }, { duration: 250 });
+  if (center && isEpic(i)) { const s = standIns(n); if (s.length) cy.animate({ fit: { eles: s, padding: 60 } }, { duration: 250 }); }
+  else if (center) cy.animate({ center: { eles: cy.getElementById("i" + n) }, zoom: Math.max(cy.zoom(), 0.9) }, { duration: 250 });
 }
 function deselect() {
   state.selected = null;
+  exitPath();
   clearHighlight();
   applyMine();
   renderOverview();
@@ -431,7 +565,8 @@ const tip = document.getElementById("tip");
 cy.on("mouseover", "node", e => {
   if (e.target.hasClass("header")) return;
   const i = byN.get(e.target.data("n"));
-  tip.innerHTML = `<b>#${i.n}</b>${esc(i.title)}<div class="muted" style="margin-top:3px">${esc(statusText(i))}${i.assignees.length ? " · " + esc(i.assignees.join(", ")) : ""}</div>`;
+  const ep = i.parent && byN.get(i.parent);
+  tip.innerHTML = `<b>#${i.n}</b>${esc(i.title)}<div class="muted" style="margin-top:3px">${esc(statusText(i))}${i.assignees.length ? " · " + esc(i.assignees.join(", ")) : ""}${ep ? ` · in #${ep.n} ${esc(trunc(ep.title, 32))}` : ""}</div>`;
   tip.style.display = "block";
 });
 cy.on("mouseover", "edge", e => {
@@ -464,7 +599,7 @@ function renderOverview() {
   let pickTitle = "Pick next";
   if (!picks.length) {
     pickTitle = "Pick next · by score";
-    picks = DATA.issues.filter(i => i.state === "open" && i.status === "ready" && !i.in_cycle)
+    picks = DATA.issues.filter(i => isWork(i) && i.status === "ready" && !i.in_cycle)
       .sort((a, b) => sortKey(a) - sortKey(b)).slice(0, 5)
       .map(i => ({ i, why: i.unblocks_total ? `Unblocks ${i.unblocks_now} now, ${i.unblocks_total} in total` : "" }));
   }
@@ -548,8 +683,10 @@ function trendChart(hist) {
 function renderIssue(i) {
   const parts = [];
   const st = statusText(i);
+  const epic = isEpic(i) ? epicProgress(i) : null;
   const statusLine = i.state !== "open"
     ? `Closed ${ago(i.closed)}${i.reason ? " as " + esc(i.reason.replace("_", " ")) : ""}`
+    : epic ? (epic.done === epic.kids.length ? "Epic: every sub-issue is closed, ready to close" : `Epic: ${epic.done} of ${epic.kids.length} sub-issues done`)
     : i.in_cycle ? "Part of a dependency cycle"
     : i.status === "ready" ? "Ready to pick: no open blockers"
     : `Blocked by ${i.open_blockers.length} open issue${i.open_blockers.length > 1 ? "s" : ""}`;
@@ -561,7 +698,21 @@ function renderIssue(i) {
     <h2 class="issue-title">${esc(i.title)}</h2>
     <div class="gh">${esc(statusLine)} · <a href="${esc(i.url)}" target="_blank" rel="noopener">Open on GitHub ↗</a></div>
     ${pick ? `<p class="summary changed" style="margin-top:12px">${esc(pick.why || "Recommended pick")}</p>` : ""}
+    ${i.blocked_by.length || epic ? (() => {
+      const work = [...pathTo(i.n)].filter(x => x !== i.n && !isEpic(byN.get(x)));
+      const open = work.filter(x => byN.get(x).state === "open").length, done = work.length - open;
+      return `<button class="chip path-btn" id="pathBtn">${epic ? "Show path to finish epic" : "Show path to unlock"} · ${open} open${done ? `, ${done} done` : ""}</button>`;
+    })() : ""}
   </div>`);
+
+  if (epic) {
+    const pct = epic.kids.length ? Math.round(100 * epic.done / epic.kids.length) : 0;
+    const order = { ready: 0, blocked: 1, cycle: 2, closed: 3 };
+    const rows = epic.kids.slice().sort((a, b) => (order[statusText(a)] ?? 1) - (order[statusText(b)] ?? 1) || a.n - b.n)
+      .map(k => issueRow(k).replace('class="row"', `class="row${k.state === "open" ? "" : " done"}"`)).join("");
+    parts.push(`<div class="sec"><h3>Sub-issues · ${epic.done}/${epic.kids.length} done</h3>
+      <div class="bar"><i style="width:${pct}%"></i></div>${rows}</div>`);
+  }
 
   if (changedSet.has(i.n) && !ch.first_run) {
     const bits = [];
@@ -588,11 +739,18 @@ function renderIssue(i) {
     <dt>Comments</dt><dd>${i.comments}</dd>
   </dl></div>`);
 
-  if (i.state === "open") {
+  if (i.state === "open" && !epic) {
+    const direct =i.blocking.filter(b => byN.get(b) && byN.get(b).state === "open");
+    const waiting = direct.length - i.unblocks_now;
     parts.push(`<div class="sec"><h3>Impact</h3><div class="impact">
-      <div><b>${i.unblocks_now}</b><span>freed when this closes</span></div>
+      <div><b>${direct.length}</b><span>directly blocks</span></div>
+      <div><b>${i.unblocks_now}</b><span>ready once this closes</span></div>
       <div><b>${i.unblocks_total}</b><span>downstream in total</span></div>
-      <div><b>${i.open_blockers.length}</b><span>open blockers</span></div></div></div>`);
+      <div><b>${i.open_blockers.length}</b><span>open blockers</span></div></div>
+      ${waiting > 0 ? `<p class="muted" style="margin:10px 0 0;font-size:12px">${
+        waiting < direct.length ? `${waiting} of the ${direct.length} issues it blocks ${waiting > 1 ? "are" : "is"} also waiting on other open issues.`
+        : direct.length > 1 ? `All ${direct.length} issues it blocks are also waiting on other open issues, so none become ready when this closes.`
+        : `The issue it blocks is also waiting on other open issues, so it stays blocked when this closes.`}</p>` : ""}</div>`);
   }
 
   const prHtml = i.prs.map(p => {
@@ -621,11 +779,50 @@ function renderIssue(i) {
   panel.innerHTML = parts.join("");
   panel.scrollTop = 0;
   document.getElementById("back").onclick = deselect;
+  const pb = document.getElementById("pathBtn");
+  if (pb) pb.onclick = () => showPath(i.n);
+}
+
+function renderPath(n) {
+  const i = byN.get(n);
+  const { steps, done } = pathSteps(n);
+  const epic = isEpic(i);
+  // For an issue the last step is the issue itself; an epic has no step of its own.
+  const before = steps.flat().filter(x => x.n !== n);
+  const nSteps = epic ? steps.length : steps.length - 1;
+  const row = (x, why) => issueRow(x, why).replace('class="row"', `class="row${x.state === "open" ? "" : " done"}" data-focus="1"`);
+  const parts = [];
+  parts.push(`<div class="sec">
+    <button class="back" id="back">← #${n}</button>
+    <div class="issue-head"><span class="n">${epic ? "Path to finish" : "Path to"} #${n}</span></div>
+    <h2 class="issue-title">${esc(i.title)}</h2>
+    <p class="summary muted">${before.length
+      ? `${before.length} open issue${before.length > 1 ? "s" : ""} to finish${epic ? "" : " first"}, in ${nSteps} step${nSteps > 1 ? "s" : ""}.`
+      : epic ? "Every sub-issue is done." : "Nothing open stands in the way."}${done.length ? ` ${done.length} already done, shown dimmed.` : ""}</p>
+  </div>`);
+  const body = steps.map((g, k) => {
+    const last = k === steps.length - 1 && !epic;
+    const title = k === 0 ? "Start here" : last ? "Finally" : "Step " + (k + 1);
+    return `<div class="step">${title}</div>` + g.map(x => row(x, x.n === n ? "Target" : "")).join("");
+  }).join("");
+  parts.push(`<div class="sec"><h3>Order of work</h3>${body || `<div class="empty">Nothing left to do.</div>`}</div>`);
+  if (done.length) parts.push(`<div class="sec"><h3>Already done · ${done.length}</h3>${done.map(x => row(x)).join("")}</div>`);
+  panel.innerHTML = parts.join("");
+  panel.scrollTop = 0;
+  document.getElementById("back").onclick = () => select(n, false);
 }
 
 panel.addEventListener("click", e => {
   const t = e.target.closest("[data-n]");
-  if (t && !e.target.closest("a[href]")) select(Number(t.dataset.n), true);
+  if (!t || e.target.closest("a[href]")) return;
+  const n = Number(t.dataset.n);
+  // Rows in the path list only move the view; they keep path mode on.
+  if (t.dataset.focus && state.path !== null) {
+    cy.animate({ center: { eles: cy.getElementById("i" + n) }, zoom: Math.max(cy.zoom(), 0.9) }, { duration: 250 });
+    cy.nodes().unselect(); cy.getElementById("i" + n).select();
+    return;
+  }
+  select(n, true);
 });
 
 // ---------------------------------------------------------------- controls

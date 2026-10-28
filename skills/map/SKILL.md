@@ -65,3 +65,5 @@ If `warnings` mention dropped picks or edges, fix the notes and render again.
 Keep the chat reply short (three to six lines): open, ready and blocked counts; the most important changes since the last sync; the top one or two picks with their reason; and the HTML path if `opened` is false so the user can open it. Do not paste the digest.
 
 In the view: Graph and Schedule switch layouts; clicking an issue turns the arrows to issues it blocks light red and arrows from its blockers solid white, and shows status, assignees, reviewers from linked PRs, labels and the blocker lists.
+
+Epics: an issue with sub-issues has `status: "epic"`. It is a container, not work, so it is never in `candidates` and must not be a pick; pick its sub-issues instead. The view leaves it out of the canvas (unless it has dependencies of its own) and selecting it highlights its sub-issues. An issue with no sub-issues is ordinary work, whatever its title or labels say.
