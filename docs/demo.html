@@ -111,11 +111,19 @@
   .pr .top { display: flex; gap: 8px; align-items: baseline; }
   .pr .top a { font-family: var(--mono); font-weight: 600; text-decoration: none; }
   .pr .meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
-  .impact { display: flex; gap: 22px; }
+  .impact { display: flex; flex-wrap: wrap; gap: 10px 22px; }
   .impact b { font: 600 18px var(--mono); display: block; }
   .impact span { color: var(--muted); font-size: 11.5px; }
   .warn { border: 1px solid var(--red-strong); color: var(--red); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; }
   .changed { border-left: 2px solid var(--text); padding-left: 10px; }
+  .path-btn { margin-top: 12px; }
+  .row.done { opacity: .45; }
+  .bar { height: 4px; background: var(--line); border-radius: 2px; margin: 0 0 10px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--text); }
+  .pill.epic { border-style: dashed; color: var(--text); }
+  .sw.epic { background: #141416; border: 1.5px dashed #d8d8d8; }
+  .step { font: 600 10.5px var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 12px 0 2px; }
+  .step:first-of-type { margin-top: 0; }
 
   .chart { width: 100%; height: auto; display: block; }
   .chart text { fill: var(--muted); font: 10px var(--mono); }
@@ -165,6 +173,7 @@
         <div><span class="sw blocked"></span>Blocked</div>
         <div><span class="sw closed"></span>Closed</div>
         <div><span class="sw cycle"></span>In a cycle</div>
+        <div id="lgEpic" hidden><span class="sw epic"></span>Epic with its own dependencies</div>
         <div><span class="ln idle"></span>Dependency</div>
         <div><span class="ln out"></span>Blocks (selected)</div>
         <div><span class="ln in"></span>Blocked by (selected)</div>
@@ -211,7 +220,7 @@ var Yr=function(e){if(!(this instanceof Yr))return new Yr(e);this.id="Thenable/1
 </script>
 <script>
 "use strict";
-const DATA = {"meta": {"repo": "acme/storefront", "url": "https://github.com/acme/storefront", "private": true, "viewer": "dhawal-p", "total_reported": 43, "fetched_at": "2026-11-03T08:00:00Z", "deps_supported": true}, "issues": [{"n": 1, "title": "Set up monorepo tooling", "url": "https://github.com/acme/storefront/issues/1", "state": "closed", "reason": "completed", "created": "2026-07-07T08:00:00Z", "updated": "2026-07-19T08:00:00Z", "closed": "2026-07-19T08:00:00Z", "author": "alice", "assignees": ["alice"], "labels": [{"name": "chore", "color": "cfd3d7"}], "milestone": null, "comments": 7, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 107, "age_days": 119, "score": -4}, {"n": 2, "title": "Define product catalog schema", "url": "https://github.com/acme/storefront/issues/2", "state": "closed", "reason": "completed", "created": "2026-07-09T08:00:00Z", "updated": "2026-08-08T08:00:00Z", "closed": "2026-08-08T08:00:00Z", "author": "alice", "assignees": ["bob"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [], "blocking": [4, 6, 15], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 87, "age_days": 117, "score": -4}, {"n": 3, "title": "Email and password sign-in", "url": "https://github.com/acme/storefront/issues/3", "state": "closed", "reason": "completed", "created": "2026-07-11T08:00:00Z", "updated": "2026-08-28T08:00:00Z", "closed": "2026-08-28T08:00:00Z", "author": "bob", "assignees": ["alice"], "labels": [{"name": "auth", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [{"n": 90, "title": "Add email sign-in", "url": "https://github.com/acme/storefront/pull/90", "state": "merged", "draft": false, "decision": "APPROVED", "author": "alice", "requested": [], "reviews": [{"who": "bob", "state": "APPROVED"}]}], "blocked_by": [], "blocking": [10, 12, 27], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 67, "age_days": 115, "score": -4}, {"n": 4, "title": "Product listing API", "url": "https://github.com/acme/storefront/issues/4", "state": "closed", "reason": "completed", "created": "2026-07-19T08:00:00Z", "updated": "2026-11-02T08:00:00Z", "closed": "2026-11-02T08:00:00Z", "author": "alice", "assignees": ["alice"], "labels": [{"name": "backend", "color": "cfd3d7"}, {"name": "p1", "color": "e99695"}], "milestone": "v1.0 launch", "comments": 6, "parent": null, "prs": [{"n": 101, "title": "Listing endpoint with pagination", "url": "https://github.com/acme/storefront/pull/101", "state": "merged", "draft": false, "decision": "APPROVED", "author": "alice", "requested": [], "reviews": [{"who": "carol", "state": "APPROVED"}, {"who": "bob", "state": "APPROVED"}]}], "blocked_by": [2], "blocking": [5, 7, 8, 27, 39], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 1, "age_days": 107, "score": -2}, {"n": 5, "title": "Product detail page", "url": "https://github.com/acme/storefront/issues/5", "state": "open", "reason": null, "created": "2026-07-21T08:00:00Z", "updated": "2026-10-07T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [4], "blocking": [26, 42], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 2, "unblocks_now": 2, "idle_days": 27, "age_days": 105, "score": 9}, {"n": 6, "title": "Search index for catalog", "url": "https://github.com/acme/storefront/issues/6", "state": "open", "reason": null, "created": "2026-07-24T08:00:00Z", "updated": "2026-10-15T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}, {"name": "enhancement", "color": "cfd3d7"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [2], "blocking": [7], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 1, "idle_days": 19, "age_days": 102, "score": 5}, {"n": 7, "title": "Search results page", "url": "https://github.com/acme/storefront/issues/7", "state": "open", "reason": null, "created": "2026-07-25T08:00:00Z", "updated": "2026-09-27T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 5, "parent": null, "prs": [], "blocked_by": [4, 6], "blocking": [], "open_blockers": [6], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 37, "age_days": 101, "score": 1}, {"n": 8, "title": "Cart service", "url": "https://github.com/acme/storefront/issues/8", "state": "open", "reason": null, "created": "2026-07-29T08:00:00Z", "updated": "2026-10-21T08:00:00Z", "closed": null, "author": "alice", "assignees": ["bob"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": "v1.0 launch", "comments": 1, "parent": null, "prs": [], "blocked_by": [4], "blocking": [9, 10, 43], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 9, "unblocks_now": 2, "idle_days": 13, "age_days": 97, "score": 11}, {"n": 9, "title": "Cart drawer UI", "url": "https://github.com/acme/storefront/issues/9", "state": "open", "reason": null, "created": "2026-07-31T08:00:00Z", "updated": "2026-09-17T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [8], "blocking": [], "open_blockers": [8], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 47, "age_days": 95, "score": 1}, {"n": 10, "title": "Checkout flow", "url": "https://github.com/acme/storefront/issues/10", "state": "open", "reason": null, "created": "2026-08-03T08:00:00Z", "updated": "2026-10-22T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}, {"name": "p1", "color": "e99695"}], "milestone": "v1.0 launch", "comments": 4, "parent": null, "prs": [], "blocked_by": [3, 8, 12], "blocking": [11, 14, 22, 34, 38], "open_blockers": [8, 12], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 6, "unblocks_now": 2, "idle_days": 12, "age_days": 92, "score": 15}, {"n": 11, "title": "Order confirmation email", "url": "https://github.com/acme/storefront/issues/11", "state": "open", "reason": null, "created": "2026-08-08T08:00:00Z", "updated": "2026-09-07T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [10], "blocking": [], "open_blockers": [10], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 57, "age_days": 87, "score": 1}, {"n": 12, "title": "Payment provider integration", "url": "https://github.com/acme/storefront/issues/12", "state": "open", "reason": null, "created": "2026-08-10T08:00:00Z", "updated": "2026-10-24T08:00:00Z", "closed": null, "author": "bob", "assignees": ["dhawal-p"], "labels": [{"name": "backend", "color": "cfd3d7"}, {"name": "p1", "color": "e99695"}], "milestone": "v1.0 launch", "comments": 7, "parent": null, "prs": [{"n": 103, "title": "Stripe payment intents", "url": "https://github.com/acme/storefront/pull/103", "state": "open", "draft": false, "decision": "REVIEW_REQUIRED", "author": "dhawal-p", "requested": ["alice"], "reviews": []}], "blocked_by": [3], "blocking": [10, 13], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": true, "unblocks_total": 8, "unblocks_now": 1, "idle_days": 10, "age_days": 85, "score": 14}, {"n": 13, "title": "Refund handling", "url": "https://github.com/acme/storefront/issues/13", "state": "open", "reason": null, "created": "2026-08-12T08:00:00Z", "updated": "2026-09-12T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [12], "blocking": [], "open_blockers": [12], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 52, "age_days": 83, "score": 1}, {"n": 14, "title": "Admin: order list", "url": "https://github.com/acme/storefront/issues/14", "state": "open", "reason": null, "created": "2026-08-18T08:00:00Z", "updated": "2026-09-24T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "admin", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [], "blocked_by": [10], "blocking": [20], "open_blockers": [10], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 40, "age_days": 77, "score": 2}, {"n": 15, "title": "Admin: inventory editing", "url": "https://github.com/acme/storefront/issues/15", "state": "open", "reason": null, "created": "2026-08-20T08:00:00Z", "updated": "2026-10-18T08:00:00Z", "closed": null, "author": "bob", "assignees": ["bob"], "labels": [{"name": "admin", "color": "cfd3d7"}], "milestone": null, "comments": 6, "parent": null, "prs": [], "blocked_by": [2], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 16, "age_days": 75, "score": -4}, {"n": 16, "title": "Rate limiting on public API", "url": "https://github.com/acme/storefront/issues/16", "state": "open", "reason": null, "created": "2026-08-22T08:00:00Z", "updated": "2026-11-01T08:00:00Z", "closed": null, "author": "alice", "assignees": ["dhawal-p"], "labels": [{"name": "security", "color": "5319e7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [], "blocking": [38], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 2, "age_days": 73, "score": 5}, {"n": 17, "title": "Cart total rounding error", "url": "https://github.com/acme/storefront/issues/17", "state": "open", "reason": null, "created": "2026-09-17T08:00:00Z", "updated": "2026-10-23T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "bug", "color": "d73a4a"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 11, "age_days": 47, "score": 2}, {"n": 18, "title": "Login redirect loop on Safari", "url": "https://github.com/acme/storefront/issues/18", "state": "closed", "reason": "completed", "created": "2026-10-15T08:00:00Z", "updated": "2026-10-31T08:00:00Z", "closed": "2026-10-31T08:00:00Z", "author": "bob", "assignees": [], "labels": [{"name": "bug", "color": "d73a4a"}, {"name": "p0", "color": "b60205"}], "milestone": "v1.0 launch", "comments": 5, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 3, "age_days": 19, "score": 6}, {"n": 19, "title": "Analytics events schema", "url": "https://github.com/acme/storefront/issues/19", "state": "open", "reason": null, "created": "2026-08-28T08:00:00Z", "updated": "2026-10-13T08:00:00Z", "closed": null, "author": "alice", "assignees": ["carol"], "labels": [{"name": "data", "color": "cfd3d7"}], "milestone": null, "comments": 1, "parent": null, "prs": [], "blocked_by": [], "blocking": [20, 28], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 2, "unblocks_now": 0, "idle_days": 21, "age_days": 67, "score": -2}, {"n": 20, "title": "Analytics dashboard", "url": "https://github.com/acme/storefront/issues/20", "state": "open", "reason": null, "created": "2026-08-30T08:00:00Z", "updated": "2026-09-16T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "data", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [14, 19], "blocking": [], "open_blockers": [14, 19], "status": "blocked", "layer": 3, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 48, "age_days": 65, "score": 1}, {"n": 21, "title": "i18n framework and locale routing", "url": "https://github.com/acme/storefront/issues/21", "state": "open", "reason": null, "created": "2026-07-27T08:00:00Z", "updated": "2026-10-29T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 4, "parent": null, "prs": [], "blocked_by": [], "blocking": [22], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 5, "age_days": 99, "score": 2}, {"n": 22, "title": "Translate checkout", "url": "https://github.com/acme/storefront/issues/22", "state": "open", "reason": null, "created": "2026-08-31T08:00:00Z", "updated": "2026-08-31T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [10, 21], "blocking": [], "open_blockers": [10, 21], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 64, "age_days": 64, "score": 1}, {"n": 24, "title": "Accessibility audit", "url": "https://github.com/acme/storefront/issues/24", "state": "open", "reason": null, "created": "2026-09-07T08:00:00Z", "updated": "2026-10-19T08:00:00Z", "closed": null, "author": "bob", "assignees": ["carol"], "labels": [{"name": "a11y", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 15, "age_days": 57, "score": -4}, {"n": 25, "title": "Image CDN", "url": "https://github.com/acme/storefront/issues/25", "state": "closed", "reason": "completed", "created": "2026-08-03T08:00:00Z", "updated": "2026-09-27T08:00:00Z", "closed": "2026-09-27T08:00:00Z", "author": "alice", "assignees": ["dave"], "labels": [{"name": "infra", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [], "blocked_by": [], "blocking": [26], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 37, "age_days": 92, "score": -4}, {"n": 26, "title": "Product image gallery", "url": "https://github.com/acme/storefront/issues/26", "state": "open", "reason": null, "created": "2026-09-08T08:00:00Z", "updated": "2026-10-05T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 6, "parent": null, "prs": [], "blocked_by": [5, 25], "blocking": [], "open_blockers": [5], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 29, "age_days": 56, "score": 1}, {"n": 27, "title": "Wishlist", "url": "https://github.com/acme/storefront/issues/27", "state": "open", "reason": null, "created": "2026-09-12T08:00:00Z", "updated": "2026-10-02T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [3, 4], "blocking": [28], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 32, "age_days": 52, "score": 2}, {"n": 28, "title": "Recommendations widget", "url": "https://github.com/acme/storefront/issues/28", "state": "open", "reason": null, "created": "2026-09-13T08:00:00Z", "updated": "2026-09-13T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [19, 27], "blocking": [], "open_blockers": [19, 27], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 51, "age_days": 51, "score": 1}, {"n": 29, "title": "Coupon engine", "url": "https://github.com/acme/storefront/issues/29", "state": "open", "reason": null, "created": "2026-09-15T08:00:00Z", "updated": "2026-10-17T08:00:00Z", "closed": null, "author": "alice", "assignees": ["dave"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 5, "parent": null, "prs": [], "blocked_by": [31], "blocking": [30, 31], "open_blockers": [31], "status": "blocked", "layer": 0, "in_cycle": true, "in_progress": false, "unblocks_total": 2, "unblocks_now": 2, "idle_days": 17, "age_days": 49, "score": 4}, {"n": 30, "title": "Coupon entry UI", "url": "https://github.com/acme/storefront/issues/30", "state": "open", "reason": null, "created": "2026-09-16T08:00:00Z", "updated": "2026-10-17T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 1, "parent": null, "prs": [], "blocked_by": [29], "blocking": [], "open_blockers": [29], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 17, "age_days": 48, "score": 1}, {"n": 31, "title": "Promotion rules", "url": "https://github.com/acme/storefront/issues/31", "state": "open", "reason": null, "created": "2026-09-16T08:00:00Z", "updated": "2026-10-16T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [29], "blocking": [29], "open_blockers": [29], "status": "blocked", "layer": 0, "in_cycle": true, "in_progress": false, "unblocks_total": 2, "unblocks_now": 1, "idle_days": 18, "age_days": 48, "score": 6}, {"n": 32, "title": "Shipping rates API", "url": "https://github.com/acme/storefront/issues/32", "state": "open", "reason": null, "created": "2026-09-19T08:00:00Z", "updated": "2026-10-20T08:00:00Z", "closed": null, "author": "alice", "assignees": ["alice"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 4, "parent": null, "prs": [], "blocked_by": [], "blocking": [33], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 2, "unblocks_now": 1, "idle_days": 14, "age_days": 45, "score": 1}, {"n": 33, "title": "Address validation", "url": "https://github.com/acme/storefront/issues/33", "state": "open", "reason": null, "created": "2026-09-20T08:00:00Z", "updated": "2026-10-09T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [32], "blocking": [34], "open_blockers": [32], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 25, "age_days": 44, "score": 2}, {"n": 34, "title": "Guest checkout", "url": "https://github.com/acme/storefront/issues/34", "state": "open", "reason": null, "created": "2026-09-27T08:00:00Z", "updated": "2026-10-30T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 7, "parent": 10, "prs": [], "blocked_by": [10, 33], "blocking": [], "open_blockers": [10, 33], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 4, "age_days": 37, "score": 1}, {"n": 35, "title": "Session timeout warning", "url": "https://github.com/acme/storefront/issues/35", "state": "closed", "reason": "duplicate", "created": "2026-09-28T08:00:00Z", "updated": "2026-09-30T08:00:00Z", "closed": "2026-09-30T08:00:00Z", "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 34, "age_days": 36, "score": 1}, {"n": 36, "title": "Upgrade framework to v15", "url": "https://github.com/acme/storefront/issues/36", "state": "open", "reason": null, "created": "2026-10-01T08:00:00Z", "updated": "2026-10-14T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "chore", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 20, "age_days": 33, "score": 1}, {"n": 37, "title": "Remove deprecated API calls", "url": "https://github.com/acme/storefront/issues/37", "state": "open", "reason": null, "created": "2026-10-02T08:00:00Z", "updated": "2026-10-14T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "chore", "color": "cfd3d7"}], "milestone": null, "comments": 6, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 20, "age_days": 32, "score": 1}, {"n": 38, "title": "Load testing", "url": "https://github.com/acme/storefront/issues/38", "state": "open", "reason": null, "created": "2026-10-07T08:00:00Z", "updated": "2026-10-11T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "infra", "color": "cfd3d7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [10, 16], "blocking": [], "open_blockers": [10, 16], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 23, "age_days": 27, "score": 1}, {"n": 39, "title": "Docs: API reference", "url": "https://github.com/acme/storefront/issues/39", "state": "open", "reason": null, "created": "2026-10-09T08:00:00Z", "updated": "2026-10-10T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "docs", "color": "cfd3d7"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [4], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 24, "age_days": 25, "score": 1}, {"n": 40, "title": "Mobile nav redesign", "url": "https://github.com/acme/storefront/issues/40", "state": "open", "reason": null, "created": "2026-10-12T08:00:00Z", "updated": "2026-10-25T08:00:00Z", "closed": null, "author": "alice", "assignees": ["dave"], "labels": [{"name": "frontend", "color": "cfd3d7"}, {"name": "design", "color": "cfd3d7"}], "milestone": null, "comments": 5, "parent": null, "prs": [{"n": 102, "title": "WIP: new mobile nav", "url": "https://github.com/acme/storefront/pull/102", "state": "open", "draft": true, "decision": null, "author": "dave", "requested": [], "reviews": []}], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": true, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 9, "age_days": 22, "score": -7}, {"n": 41, "title": "Sitemap generation", "url": "https://github.com/acme/storefront/issues/41", "state": "open", "reason": null, "created": "2026-10-17T08:00:00Z", "updated": "2026-10-17T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "seo", "color": "cfd3d7"}], "milestone": null, "comments": 1, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 17, "age_days": 17, "score": 1}, {"n": 42, "title": "SEO meta tags", "url": "https://github.com/acme/storefront/issues/42", "state": "open", "reason": null, "created": "2026-10-18T08:00:00Z", "updated": "2026-10-18T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "seo", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [5], "blocking": [], "open_blockers": [5], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 16, "age_days": 16, "score": 1}, {"n": 43, "title": "Cart persistence across devices", "url": "https://github.com/acme/storefront/issues/43", "state": "open", "reason": null, "created": "2026-10-31T08:00:00Z", "updated": "2026-10-31T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 4, "parent": null, "prs": [], "blocked_by": [8], "blocking": [], "open_blockers": [8], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 3, "age_days": 3, "score": 1}, {"n": 44, "title": "Checkout button disabled on mobile", "url": "https://github.com/acme/storefront/issues/44", "state": "open", "reason": null, "created": "2026-11-02T08:00:00Z", "updated": "2026-11-02T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "bug", "color": "d73a4a"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 1, "age_days": 1, "score": 2}], "edges": [[2, 4], [2, 6], [2, 15], [3, 10], [3, 12], [3, 27], [4, 5], [4, 7], [4, 8], [4, 27], [4, 39], [5, 26], [5, 42], [6, 7], [8, 9], [8, 10], [8, 43], [10, 11], [10, 14], [10, 22], [10, 34], [10, 38], [12, 10], [12, 13], [14, 20], [16, 38], [19, 20], [19, 28], [21, 22], [25, 26], [27, 28], [29, 30], [29, 31], [31, 29], [32, 33], [33, 34]], "cycles": [[29, 31]], "changes": {"first_run": false, "previous_fetch": "2026-10-27T08:00:00Z", "created": [{"n": 43, "title": "Cart persistence across devices"}, {"n": 44, "title": "Checkout button disabled on mobile"}], "closed": [{"n": 4, "title": "Product listing API", "reason": "completed"}, {"n": 18, "title": "Login redirect loop on Safari", "reason": "completed"}], "reopened": [], "missing": [{"n": 23, "title": "Dark mode tokens"}], "edited": [{"n": 16, "title": "Rate limiting on public API", "changes": [{"field": "assignees", "added": ["dhawal-p"], "removed": []}]}, {"n": 21, "title": "i18n framework and locale routing", "changes": [{"field": "title", "from": "i18n framework", "to": "i18n framework and locale routing"}]}], "deps_added": [{"blocker": 8, "blocked": 43}, {"blocker": 33, "blocked": 34}], "deps_removed": [], "newly_unblocked": [{"n": 5, "title": "Product detail page"}, {"n": 8, "title": "Cart service"}, {"n": 27, "title": "Wishlist"}, {"n": 39, "title": "Docs: API reference"}], "newly_blocked": [], "pr_changes": [{"issue": 4, "pr": 101, "change": "open → merged"}, {"issue": 12, "pr": 103, "change": "linked", "state": "open"}], "has_changes": true}, "history": [{"fetched_at": "2026-10-27T08:00:00Z", "total": 42, "open": 36, "closed": 6, "ready": 15, "blocked": 21, "in_progress": 2, "dependencies": 34, "cycles": 1, "created_since_last": 0, "closed_since_last": 0, "missing_since_last": 0}, {"fetched_at": "2026-11-03T08:00:00Z", "total": 43, "open": 36, "closed": 7, "ready": 18, "blocked": 18, "in_progress": 2, "dependencies": 36, "cycles": 1, "created_since_last": 2, "closed_since_last": 2, "missing_since_last": 1}], "notes": {"summary": "Since the last sync #4 Product listing API and #18 Safari login loop closed, two issues were opened and #23 is gone. Closing #4 unblocked #5, #8, #27 and #39, so 18 of 36 open issues are now ready. #8 Cart service is the new bottleneck. #29 and #31 still block each other.", "picks": [{"n": 16, "why": "Newly assigned to you and unblocks Load testing; nothing in review yet."}, {"n": 5, "why": "Just unblocked, unassigned, and frees SEO meta tags and the image gallery."}, {"n": 6, "why": "Unassigned and is the last blocker on Search results page."}, {"n": 12, "why": "Your PR #103 is waiting on review from alice; follow up rather than start new work."}], "suggested_edges": [{"blocker": 8, "blocked": 17, "reason": "#17 says the fix waits for the cart service, which owns totals."}, {"blocker": 36, "blocked": 37, "reason": "#36 says the deprecated calls only go away after the upgrade."}, {"blocker": 40, "blocked": 44, "reason": "#44 says the new nav overlaps the checkout button."}]}};
+const DATA = {"meta": {"repo": "acme/storefront", "url": "https://github.com/acme/storefront", "private": true, "viewer": "dhawal-p", "total_reported": 43, "fetched_at": "2026-11-03T08:00:00Z", "deps_supported": true}, "issues": [{"n": 1, "title": "Set up monorepo tooling", "url": "https://github.com/acme/storefront/issues/1", "state": "closed", "reason": "completed", "created": "2026-07-07T08:00:00Z", "updated": "2026-07-19T08:00:00Z", "closed": "2026-07-19T08:00:00Z", "author": "alice", "assignees": ["alice"], "labels": [{"name": "chore", "color": "cfd3d7"}], "milestone": null, "comments": 7, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 107, "age_days": 119, "score": -4, "children": []}, {"n": 2, "title": "Define product catalog schema", "url": "https://github.com/acme/storefront/issues/2", "state": "closed", "reason": "completed", "created": "2026-07-09T08:00:00Z", "updated": "2026-08-08T08:00:00Z", "closed": "2026-08-08T08:00:00Z", "author": "alice", "assignees": ["bob"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [], "blocking": [4, 6, 15], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 87, "age_days": 117, "score": -4, "children": []}, {"n": 3, "title": "Email and password sign-in", "url": "https://github.com/acme/storefront/issues/3", "state": "closed", "reason": "completed", "created": "2026-07-11T08:00:00Z", "updated": "2026-08-28T08:00:00Z", "closed": "2026-08-28T08:00:00Z", "author": "bob", "assignees": ["alice"], "labels": [{"name": "auth", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [{"n": 90, "title": "Add email sign-in", "url": "https://github.com/acme/storefront/pull/90", "state": "merged", "draft": false, "decision": "APPROVED", "author": "alice", "requested": [], "reviews": [{"who": "bob", "state": "APPROVED"}]}], "blocked_by": [], "blocking": [10, 12, 27], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 67, "age_days": 115, "score": -4, "children": []}, {"n": 4, "title": "Product listing API", "url": "https://github.com/acme/storefront/issues/4", "state": "closed", "reason": "completed", "created": "2026-07-19T08:00:00Z", "updated": "2026-11-02T08:00:00Z", "closed": "2026-11-02T08:00:00Z", "author": "alice", "assignees": ["alice"], "labels": [{"name": "backend", "color": "cfd3d7"}, {"name": "p1", "color": "e99695"}], "milestone": "v1.0 launch", "comments": 6, "parent": null, "prs": [{"n": 101, "title": "Listing endpoint with pagination", "url": "https://github.com/acme/storefront/pull/101", "state": "merged", "draft": false, "decision": "APPROVED", "author": "alice", "requested": [], "reviews": [{"who": "carol", "state": "APPROVED"}, {"who": "bob", "state": "APPROVED"}]}], "blocked_by": [2], "blocking": [5, 7, 8, 27, 39], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 1, "age_days": 107, "score": -2, "children": []}, {"n": 5, "title": "Product detail page", "url": "https://github.com/acme/storefront/issues/5", "state": "open", "reason": null, "created": "2026-07-21T08:00:00Z", "updated": "2026-10-07T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [4], "blocking": [26, 42], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 2, "unblocks_now": 2, "idle_days": 27, "age_days": 105, "score": 9, "children": []}, {"n": 6, "title": "Search index for catalog", "url": "https://github.com/acme/storefront/issues/6", "state": "open", "reason": null, "created": "2026-07-24T08:00:00Z", "updated": "2026-10-15T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}, {"name": "enhancement", "color": "cfd3d7"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [2], "blocking": [7], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 1, "idle_days": 19, "age_days": 102, "score": 5, "children": []}, {"n": 7, "title": "Search results page", "url": "https://github.com/acme/storefront/issues/7", "state": "open", "reason": null, "created": "2026-07-25T08:00:00Z", "updated": "2026-09-27T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 5, "parent": null, "prs": [], "blocked_by": [4, 6], "blocking": [], "open_blockers": [6], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 37, "age_days": 101, "score": 1, "children": []}, {"n": 8, "title": "Cart service", "url": "https://github.com/acme/storefront/issues/8", "state": "open", "reason": null, "created": "2026-07-29T08:00:00Z", "updated": "2026-10-21T08:00:00Z", "closed": null, "author": "alice", "assignees": ["bob"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": "v1.0 launch", "comments": 1, "parent": null, "prs": [], "blocked_by": [4], "blocking": [9, 10, 43], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 9, "unblocks_now": 2, "idle_days": 13, "age_days": 97, "score": 11, "children": []}, {"n": 9, "title": "Cart drawer UI", "url": "https://github.com/acme/storefront/issues/9", "state": "open", "reason": null, "created": "2026-07-31T08:00:00Z", "updated": "2026-09-17T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [8], "blocking": [], "open_blockers": [8], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 47, "age_days": 95, "score": 1, "children": []}, {"n": 10, "title": "Checkout flow", "url": "https://github.com/acme/storefront/issues/10", "state": "open", "reason": null, "created": "2026-08-03T08:00:00Z", "updated": "2026-10-22T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}, {"name": "p1", "color": "e99695"}], "milestone": "v1.0 launch", "comments": 4, "parent": null, "prs": [], "blocked_by": [3, 8, 12], "blocking": [11, 14, 22, 34, 38], "open_blockers": [8, 12], "status": "epic", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 6, "unblocks_now": 2, "idle_days": 12, "age_days": 92, "score": 15, "children": [34]}, {"n": 11, "title": "Order confirmation email", "url": "https://github.com/acme/storefront/issues/11", "state": "open", "reason": null, "created": "2026-08-08T08:00:00Z", "updated": "2026-09-07T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [10], "blocking": [], "open_blockers": [10], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 57, "age_days": 87, "score": 1, "children": []}, {"n": 12, "title": "Payment provider integration", "url": "https://github.com/acme/storefront/issues/12", "state": "open", "reason": null, "created": "2026-08-10T08:00:00Z", "updated": "2026-10-24T08:00:00Z", "closed": null, "author": "bob", "assignees": ["dhawal-p"], "labels": [{"name": "backend", "color": "cfd3d7"}, {"name": "p1", "color": "e99695"}], "milestone": "v1.0 launch", "comments": 7, "parent": null, "prs": [{"n": 103, "title": "Stripe payment intents", "url": "https://github.com/acme/storefront/pull/103", "state": "open", "draft": false, "decision": "REVIEW_REQUIRED", "author": "dhawal-p", "requested": ["alice"], "reviews": []}], "blocked_by": [3], "blocking": [10, 13], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": true, "unblocks_total": 8, "unblocks_now": 1, "idle_days": 10, "age_days": 85, "score": 14, "children": []}, {"n": 13, "title": "Refund handling", "url": "https://github.com/acme/storefront/issues/13", "state": "open", "reason": null, "created": "2026-08-12T08:00:00Z", "updated": "2026-09-12T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [12], "blocking": [], "open_blockers": [12], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 52, "age_days": 83, "score": 1, "children": []}, {"n": 14, "title": "Admin: order list", "url": "https://github.com/acme/storefront/issues/14", "state": "open", "reason": null, "created": "2026-08-18T08:00:00Z", "updated": "2026-09-24T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "admin", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [], "blocked_by": [10], "blocking": [20], "open_blockers": [10], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 40, "age_days": 77, "score": 2, "children": []}, {"n": 15, "title": "Admin: inventory editing", "url": "https://github.com/acme/storefront/issues/15", "state": "open", "reason": null, "created": "2026-08-20T08:00:00Z", "updated": "2026-10-18T08:00:00Z", "closed": null, "author": "bob", "assignees": ["bob"], "labels": [{"name": "admin", "color": "cfd3d7"}], "milestone": null, "comments": 6, "parent": null, "prs": [], "blocked_by": [2], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 16, "age_days": 75, "score": -4, "children": []}, {"n": 16, "title": "Rate limiting on public API", "url": "https://github.com/acme/storefront/issues/16", "state": "open", "reason": null, "created": "2026-08-22T08:00:00Z", "updated": "2026-11-01T08:00:00Z", "closed": null, "author": "alice", "assignees": ["dhawal-p"], "labels": [{"name": "security", "color": "5319e7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [], "blocking": [38], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 2, "age_days": 73, "score": 5, "children": []}, {"n": 17, "title": "Cart total rounding error", "url": "https://github.com/acme/storefront/issues/17", "state": "open", "reason": null, "created": "2026-09-17T08:00:00Z", "updated": "2026-10-23T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "bug", "color": "d73a4a"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 11, "age_days": 47, "score": 2, "children": []}, {"n": 18, "title": "Login redirect loop on Safari", "url": "https://github.com/acme/storefront/issues/18", "state": "closed", "reason": "completed", "created": "2026-10-15T08:00:00Z", "updated": "2026-10-31T08:00:00Z", "closed": "2026-10-31T08:00:00Z", "author": "bob", "assignees": [], "labels": [{"name": "bug", "color": "d73a4a"}, {"name": "p0", "color": "b60205"}], "milestone": "v1.0 launch", "comments": 5, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 3, "age_days": 19, "score": 6, "children": []}, {"n": 19, "title": "Analytics events schema", "url": "https://github.com/acme/storefront/issues/19", "state": "open", "reason": null, "created": "2026-08-28T08:00:00Z", "updated": "2026-10-13T08:00:00Z", "closed": null, "author": "alice", "assignees": ["carol"], "labels": [{"name": "data", "color": "cfd3d7"}], "milestone": null, "comments": 1, "parent": null, "prs": [], "blocked_by": [], "blocking": [20, 28], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 2, "unblocks_now": 0, "idle_days": 21, "age_days": 67, "score": -2, "children": []}, {"n": 20, "title": "Analytics dashboard", "url": "https://github.com/acme/storefront/issues/20", "state": "open", "reason": null, "created": "2026-08-30T08:00:00Z", "updated": "2026-09-16T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "data", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [14, 19], "blocking": [], "open_blockers": [14, 19], "status": "blocked", "layer": 3, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 48, "age_days": 65, "score": 1, "children": []}, {"n": 21, "title": "i18n framework and locale routing", "url": "https://github.com/acme/storefront/issues/21", "state": "open", "reason": null, "created": "2026-07-27T08:00:00Z", "updated": "2026-10-29T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 4, "parent": null, "prs": [], "blocked_by": [], "blocking": [22], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 5, "age_days": 99, "score": 2, "children": []}, {"n": 22, "title": "Translate checkout", "url": "https://github.com/acme/storefront/issues/22", "state": "open", "reason": null, "created": "2026-08-31T08:00:00Z", "updated": "2026-08-31T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [10, 21], "blocking": [], "open_blockers": [10, 21], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 64, "age_days": 64, "score": 1, "children": []}, {"n": 24, "title": "Accessibility audit", "url": "https://github.com/acme/storefront/issues/24", "state": "open", "reason": null, "created": "2026-09-07T08:00:00Z", "updated": "2026-10-19T08:00:00Z", "closed": null, "author": "bob", "assignees": ["carol"], "labels": [{"name": "a11y", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 15, "age_days": 57, "score": -4, "children": []}, {"n": 25, "title": "Image CDN", "url": "https://github.com/acme/storefront/issues/25", "state": "closed", "reason": "completed", "created": "2026-08-03T08:00:00Z", "updated": "2026-09-27T08:00:00Z", "closed": "2026-09-27T08:00:00Z", "author": "alice", "assignees": ["dave"], "labels": [{"name": "infra", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [], "blocked_by": [], "blocking": [26], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 37, "age_days": 92, "score": -4, "children": []}, {"n": 26, "title": "Product image gallery", "url": "https://github.com/acme/storefront/issues/26", "state": "open", "reason": null, "created": "2026-09-08T08:00:00Z", "updated": "2026-10-05T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 6, "parent": null, "prs": [], "blocked_by": [5, 25], "blocking": [], "open_blockers": [5], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 29, "age_days": 56, "score": 1, "children": []}, {"n": 27, "title": "Wishlist", "url": "https://github.com/acme/storefront/issues/27", "state": "open", "reason": null, "created": "2026-09-12T08:00:00Z", "updated": "2026-10-02T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [3, 4], "blocking": [28], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 32, "age_days": 52, "score": 2, "children": []}, {"n": 28, "title": "Recommendations widget", "url": "https://github.com/acme/storefront/issues/28", "state": "open", "reason": null, "created": "2026-09-13T08:00:00Z", "updated": "2026-09-13T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [19, 27], "blocking": [], "open_blockers": [19, 27], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 51, "age_days": 51, "score": 1, "children": []}, {"n": 29, "title": "Coupon engine", "url": "https://github.com/acme/storefront/issues/29", "state": "open", "reason": null, "created": "2026-09-15T08:00:00Z", "updated": "2026-10-17T08:00:00Z", "closed": null, "author": "alice", "assignees": ["dave"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 5, "parent": null, "prs": [], "blocked_by": [31], "blocking": [30, 31], "open_blockers": [31], "status": "blocked", "layer": 0, "in_cycle": true, "in_progress": false, "unblocks_total": 2, "unblocks_now": 2, "idle_days": 17, "age_days": 49, "score": 4, "children": []}, {"n": 30, "title": "Coupon entry UI", "url": "https://github.com/acme/storefront/issues/30", "state": "open", "reason": null, "created": "2026-09-16T08:00:00Z", "updated": "2026-10-17T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 1, "parent": null, "prs": [], "blocked_by": [29], "blocking": [], "open_blockers": [29], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 17, "age_days": 48, "score": 1, "children": []}, {"n": 31, "title": "Promotion rules", "url": "https://github.com/acme/storefront/issues/31", "state": "open", "reason": null, "created": "2026-09-16T08:00:00Z", "updated": "2026-10-16T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [29], "blocking": [29], "open_blockers": [29], "status": "blocked", "layer": 0, "in_cycle": true, "in_progress": false, "unblocks_total": 2, "unblocks_now": 1, "idle_days": 18, "age_days": 48, "score": 6, "children": []}, {"n": 32, "title": "Shipping rates API", "url": "https://github.com/acme/storefront/issues/32", "state": "open", "reason": null, "created": "2026-09-19T08:00:00Z", "updated": "2026-10-20T08:00:00Z", "closed": null, "author": "alice", "assignees": ["alice"], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 4, "parent": null, "prs": [], "blocked_by": [], "blocking": [33], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 2, "unblocks_now": 1, "idle_days": 14, "age_days": 45, "score": 1, "children": []}, {"n": 33, "title": "Address validation", "url": "https://github.com/acme/storefront/issues/33", "state": "open", "reason": null, "created": "2026-09-20T08:00:00Z", "updated": "2026-10-09T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [32], "blocking": [34], "open_blockers": [32], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 1, "unblocks_now": 0, "idle_days": 25, "age_days": 44, "score": 2, "children": []}, {"n": 34, "title": "Guest checkout", "url": "https://github.com/acme/storefront/issues/34", "state": "open", "reason": null, "created": "2026-09-27T08:00:00Z", "updated": "2026-10-30T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 7, "parent": 10, "prs": [], "blocked_by": [10, 33], "blocking": [], "open_blockers": [10, 33], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 4, "age_days": 37, "score": 1, "children": []}, {"n": 35, "title": "Session timeout warning", "url": "https://github.com/acme/storefront/issues/35", "state": "closed", "reason": "duplicate", "created": "2026-09-28T08:00:00Z", "updated": "2026-09-30T08:00:00Z", "closed": "2026-09-30T08:00:00Z", "author": "alice", "assignees": [], "labels": [{"name": "frontend", "color": "cfd3d7"}], "milestone": null, "comments": 3, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "closed", "layer": null, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 34, "age_days": 36, "score": 1, "children": []}, {"n": 36, "title": "Upgrade framework to v15", "url": "https://github.com/acme/storefront/issues/36", "state": "open", "reason": null, "created": "2026-10-01T08:00:00Z", "updated": "2026-10-14T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "chore", "color": "cfd3d7"}], "milestone": null, "comments": 10, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 20, "age_days": 33, "score": 1, "children": []}, {"n": 37, "title": "Remove deprecated API calls", "url": "https://github.com/acme/storefront/issues/37", "state": "open", "reason": null, "created": "2026-10-02T08:00:00Z", "updated": "2026-10-14T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "chore", "color": "cfd3d7"}], "milestone": null, "comments": 6, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 20, "age_days": 32, "score": 1, "children": []}, {"n": 38, "title": "Load testing", "url": "https://github.com/acme/storefront/issues/38", "state": "open", "reason": null, "created": "2026-10-07T08:00:00Z", "updated": "2026-10-11T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "infra", "color": "cfd3d7"}], "milestone": null, "comments": 2, "parent": null, "prs": [], "blocked_by": [10, 16], "blocking": [], "open_blockers": [10, 16], "status": "blocked", "layer": 2, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 23, "age_days": 27, "score": 1, "children": []}, {"n": 39, "title": "Docs: API reference", "url": "https://github.com/acme/storefront/issues/39", "state": "open", "reason": null, "created": "2026-10-09T08:00:00Z", "updated": "2026-10-10T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "docs", "color": "cfd3d7"}], "milestone": null, "comments": 9, "parent": null, "prs": [], "blocked_by": [4], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 24, "age_days": 25, "score": 1, "children": []}, {"n": 40, "title": "Mobile nav redesign", "url": "https://github.com/acme/storefront/issues/40", "state": "open", "reason": null, "created": "2026-10-12T08:00:00Z", "updated": "2026-10-25T08:00:00Z", "closed": null, "author": "alice", "assignees": ["dave"], "labels": [{"name": "frontend", "color": "cfd3d7"}, {"name": "design", "color": "cfd3d7"}], "milestone": null, "comments": 5, "parent": null, "prs": [{"n": 102, "title": "WIP: new mobile nav", "url": "https://github.com/acme/storefront/pull/102", "state": "open", "draft": true, "decision": null, "author": "dave", "requested": [], "reviews": []}], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": true, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 9, "age_days": 22, "score": -7, "children": []}, {"n": 41, "title": "Sitemap generation", "url": "https://github.com/acme/storefront/issues/41", "state": "open", "reason": null, "created": "2026-10-17T08:00:00Z", "updated": "2026-10-17T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "seo", "color": "cfd3d7"}], "milestone": null, "comments": 1, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 17, "age_days": 17, "score": 1, "children": []}, {"n": 42, "title": "SEO meta tags", "url": "https://github.com/acme/storefront/issues/42", "state": "open", "reason": null, "created": "2026-10-18T08:00:00Z", "updated": "2026-10-18T08:00:00Z", "closed": null, "author": "bob", "assignees": [], "labels": [{"name": "seo", "color": "cfd3d7"}], "milestone": null, "comments": 8, "parent": null, "prs": [], "blocked_by": [5], "blocking": [], "open_blockers": [5], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 16, "age_days": 16, "score": 1, "children": []}, {"n": 43, "title": "Cart persistence across devices", "url": "https://github.com/acme/storefront/issues/43", "state": "open", "reason": null, "created": "2026-10-31T08:00:00Z", "updated": "2026-10-31T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "backend", "color": "cfd3d7"}], "milestone": null, "comments": 4, "parent": null, "prs": [], "blocked_by": [8], "blocking": [], "open_blockers": [8], "status": "blocked", "layer": 1, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 3, "age_days": 3, "score": 1, "children": []}, {"n": 44, "title": "Checkout button disabled on mobile", "url": "https://github.com/acme/storefront/issues/44", "state": "open", "reason": null, "created": "2026-11-02T08:00:00Z", "updated": "2026-11-02T08:00:00Z", "closed": null, "author": "alice", "assignees": [], "labels": [{"name": "bug", "color": "d73a4a"}], "milestone": null, "comments": 0, "parent": null, "prs": [], "blocked_by": [], "blocking": [], "open_blockers": [], "status": "ready", "layer": 0, "in_cycle": false, "in_progress": false, "unblocks_total": 0, "unblocks_now": 0, "idle_days": 1, "age_days": 1, "score": 2, "children": []}], "edges": [[2, 4], [2, 6], [2, 15], [3, 10], [3, 12], [3, 27], [4, 5], [4, 7], [4, 8], [4, 27], [4, 39], [5, 26], [5, 42], [6, 7], [8, 9], [8, 10], [8, 43], [10, 11], [10, 14], [10, 22], [10, 34], [10, 38], [12, 10], [12, 13], [14, 20], [16, 38], [19, 20], [19, 28], [21, 22], [25, 26], [27, 28], [29, 30], [29, 31], [31, 29], [32, 33], [33, 34]], "cycles": [[29, 31]], "changes": {"first_run": false, "previous_fetch": "2026-10-27T08:00:00Z", "created": [{"n": 43, "title": "Cart persistence across devices"}, {"n": 44, "title": "Checkout button disabled on mobile"}], "closed": [{"n": 4, "title": "Product listing API", "reason": "completed"}, {"n": 18, "title": "Login redirect loop on Safari", "reason": "completed"}], "reopened": [], "missing": [{"n": 23, "title": "Dark mode tokens"}], "edited": [{"n": 16, "title": "Rate limiting on public API", "changes": [{"field": "assignees", "added": ["dhawal-p"], "removed": []}]}, {"n": 21, "title": "i18n framework and locale routing", "changes": [{"field": "title", "from": "i18n framework", "to": "i18n framework and locale routing"}]}], "deps_added": [{"blocker": 8, "blocked": 43}, {"blocker": 33, "blocked": 34}], "deps_removed": [], "newly_unblocked": [{"n": 5, "title": "Product detail page"}, {"n": 8, "title": "Cart service"}, {"n": 27, "title": "Wishlist"}, {"n": 39, "title": "Docs: API reference"}], "newly_blocked": [], "pr_changes": [{"issue": 4, "pr": 101, "change": "open → merged"}, {"issue": 12, "pr": 103, "change": "linked", "state": "open"}], "has_changes": true}, "history": [{"fetched_at": "2026-10-27T08:00:00Z", "total": 42, "open": 36, "closed": 6, "ready": 15, "blocked": 21, "in_progress": 2, "dependencies": 34, "cycles": 1, "created_since_last": 0, "closed_since_last": 0, "missing_since_last": 0}, {"fetched_at": "2026-11-03T08:00:00Z", "total": 43, "open": 36, "closed": 7, "ready": 18, "blocked": 18, "in_progress": 2, "dependencies": 36, "cycles": 1, "created_since_last": 2, "closed_since_last": 2, "missing_since_last": 1}], "notes": {"summary": "Since the last sync #4 Product listing API and #18 Safari login loop closed, two issues were opened and #23 is gone. Closing #4 unblocked #5, #8, #27 and #39, so 18 of 36 open issues are now ready. #8 Cart service is the new bottleneck. #29 and #31 still block each other.", "picks": [{"n": 16, "why": "Newly assigned to you and unblocks Load testing; nothing in review yet."}, {"n": 5, "why": "Just unblocked, unassigned, and frees SEO meta tags and the image gallery."}, {"n": 6, "why": "Unassigned and is the last blocker on Search results page."}, {"n": 12, "why": "Your PR #103 is waiting on review from alice; follow up rather than start new work."}], "suggested_edges": [{"blocker": 8, "blocked": 17, "reason": "#17 says the fix waits for the cart service, which owns totals."}, {"blocker": 36, "blocked": 37, "reason": "#36 says the deprecated calls only go away after the upgrade."}, {"blocker": 40, "blocked": 44, "reason": "#44 says the new nav overlaps the checkout button."}]}};
 
 const byN = new Map(DATA.issues.map(i => [i.n, i]));
 const meta = DATA.meta;
@@ -226,7 +235,7 @@ const ch = DATA.changes || {};
 // Suggested edges: Claude's confirmed suggestions only (text hints are in the digest, not drawn unless Claude kept them).
 const suggested = (notes.suggested_edges || []).filter(s => byN.has(s.blocker) && byN.has(s.blocked));
 
-const state = { view: "graph", showClosed: false, mine: false, selected: null };
+const state = { view: "graph", showClosed: false, mine: false, selected: null, path: null };
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const trunc = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
@@ -239,29 +248,43 @@ function ago(iso) {
   if (d < 540) return Math.round(d / 30) + " months ago";
   return Math.round(d / 365) + " years ago";
 }
-const statusText = i => i.status === "closed" ? "closed" : i.in_cycle ? "cycle" : i.status;
+// Epics: issues with sub-issues are containers, not work. Derived from `parent` so older snapshots work too.
+const kidsOf = new Map();
+DATA.issues.forEach(i => { if (i.parent && byN.has(i.parent)) (kidsOf.get(i.parent) || kidsOf.set(i.parent, []).get(i.parent)).push(i.n); });
+const isEpic = i => kidsOf.has(i.n);
+const hasDeps = i => i.blocked_by.length > 0 || i.blocking.length > 0;
+const isWork = i => i.state === "open" && !isEpic(i);
+const statusText = i => i.status === "closed" ? "closed" : isEpic(i) ? "epic" : i.in_cycle ? "cycle" : i.status;
+function epicProgress(i) {
+  const kids = kidsOf.get(i.n).map(k => byN.get(k));
+  return { kids, done: kids.filter(k => k.state !== "open").length };
+}
 
 // ---------------------------------------------------------------- header
 document.getElementById("repoName").textContent = meta.repo;
 document.getElementById("visibility").textContent = meta.private ? "private" : "public";
 document.getElementById("fetched").textContent = "synced " + NOW.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 (function counts() {
-  const open = DATA.issues.filter(i => i.state === "open");
+  const open = DATA.issues.filter(isWork);
+  const epics = DATA.issues.filter(i => i.state === "open" && isEpic(i)).length;
   const c = [
     ["Open", open.length],
     ["Ready", open.filter(i => i.status === "ready" && !i.in_cycle).length],
     ["Blocked", open.filter(i => i.status === "blocked").length],
+    ...(epics ? [["Epics", epics]] : []),
     ["In review", open.filter(i => i.in_progress).length],
-    ["Closed", DATA.issues.length - open.length],
+    ["Closed · 12 wk", DATA.issues.filter(i => i.state !== "open").length],
   ];
   document.getElementById("counts").innerHTML = c.map(([k, v]) => `<div class="count"><b>${v}</b><span>${k}</span></div>`).join("");
 })();
 if (viewer && DATA.issues.some(i => i.assignees.includes(viewer))) document.getElementById("tMine").hidden = false;
+if (DATA.issues.some(i => isEpic(i) && hasDeps(i))) document.getElementById("lgEpic").hidden = false;
 
 // ---------------------------------------------------------------- graph
 function nodeClasses(i) {
   const c = [i.state === "open" ? (i.status === "ready" ? "ready" : "blocked") : "closed"];
   if (i.in_cycle) c.push("cycle");
+  if (isEpic(i) && i.state === "open") c.push("epic");
   if (i.in_progress) c.push("progress");
   if (pickSet.has(i.n)) c.push("pick");
   return c.join(" ");
@@ -293,6 +316,7 @@ const cy = cytoscape({
     { selector: "node.ready", style: { "background-color": "#f2f2f2", color: "#0b0b0c", "border-color": "#f2f2f2" } },
     { selector: "node.closed", style: { "background-color": "#232327", color: "#7d7d84", "border-color": "#232327" } },
     { selector: "node.cycle", style: { "border-color": "#ff5f5f", "border-width": 2 } },
+    { selector: "node.epic", style: { "border-style": "dashed", "background-color": "#141416", color: "#e6e6e8", "border-color": "#cfcfd3" } },
     { selector: "node.progress", style: { "border-style": "double", "border-width": 4 } },
     { selector: "node.pick", style: { "underlay-color": "#ffffff", "underlay-opacity": 0.16, "underlay-padding": 7, "underlay-shape": "round-rectangle" } },
     { selector: "node.header", style: {
@@ -312,6 +336,7 @@ const cy = cytoscape({
     { selector: "edge.in", style: { width: 2.4, "line-color": "#ffffff", "target-arrow-color": "#ffffff", "z-index": 9 } },
     { selector: "edge.out", style: { width: 2.4, "line-color": "#ff8f8f", "target-arrow-color": "#ff8f8f", "z-index": 9 } },
     { selector: ".faded", style: { opacity: 0.1, "underlay-opacity": 0 } },
+    { selector: ".done-path", style: { opacity: 0.38 } },
     { selector: ".gone", style: { display: "none" } },
   ],
 });
@@ -319,13 +344,60 @@ const cy = cytoscape({
 function visibleIssue(i) {
   return state.showClosed || i.state === "open";
 }
+// An epic gets its own node only when it carries dependencies itself; otherwise its sub-issues stand in for it.
+const onCanvas = i => !isEpic(i) || hasDeps(i);
+// Closed issues on the active unlock path are shown (dimmed) even when "Show closed" is off.
+function shownIssue(i) {
+  return onCanvas(i) && (visibleIssue(i) || (state.path !== null && pathSet().has(i.n)));
+}
 function applyVisibility() {
   cy.batch(() => {
     cy.nodes().not(".header").forEach(n => {
       const i = byN.get(n.data("n"));
-      n.toggleClass("gone", !visibleIssue(i));
+      n.toggleClass("gone", !shownIssue(i));
     });
   });
+}
+
+// --- Unlock path: every declared blocker of an issue, transitively, open or closed.
+// An epic is finished by its sub-issues, so it depends on them as well as on its own blockers.
+const needs = i => isEpic(i) ? [...i.blocked_by, ...kidsOf.get(i.n)] : i.blocked_by;
+const pathCache = new Map();
+function pathTo(n) {
+  if (pathCache.has(n)) return pathCache.get(n);
+  const set = new Set([n]), stack = [n];
+  while (stack.length) {
+    const i = byN.get(stack.pop());
+    (i ? needs(i) : []).forEach(b => { if (byN.has(b) && !set.has(b)) { set.add(b); stack.push(b); } });
+  }
+  pathCache.set(n, set);
+  return set;
+}
+function pathSet() { return state.path === null ? new Set() : pathTo(state.path); }
+// Steps: an open issue's step is one more than the latest open blocker it waits on. Step 0 can start now.
+// Epics are not work, so they add no step of their own and are left out of the list.
+function pathSteps(n) {
+  const set = pathTo(n), step = new Map(), busy = new Set();
+  const walk = x => {
+    if (step.has(x)) return step.get(x);
+    if (busy.has(x)) return 0; // cycle: stop here
+    busy.add(x);
+    let s = 0;
+    needs(byN.get(x)).forEach(b => {
+      const bi = byN.get(b);
+      if (set.has(b) && bi.state === "open") s = Math.max(s, walk(b) + (isEpic(bi) ? 0 : 1));
+    });
+    busy.delete(x);
+    step.set(x, s);
+    return s;
+  };
+  const open = [], done = [];
+  set.forEach(x => { const i = byN.get(x); if (!isEpic(i)) (i.state === "open" ? open : done).push(i); });
+  const steps = [];
+  open.forEach(i => { const s = walk(i.n); (steps[s] = steps[s] || []).push(i); });
+  steps.forEach(g => g && g.sort((a, b) => sortKey(a) - sortKey(b)));
+  done.sort((a, b) => a.n - b.n);
+  return { steps: steps.filter(Boolean), done };
 }
 
 // --- Graph layout: force layout for connected issues, compact grid for loners.
@@ -360,7 +432,7 @@ function layoutSchedule() {
   const COLW = 190, ROWH = 56, MAXROWS = 22;
   const groups = new Map();
   const add = (key, title, i) => { if (!groups.has(key)) groups.set(key, { title, items: [] }); groups.get(key).items.push(i); };
-  DATA.issues.filter(visibleIssue).forEach(i => {
+  DATA.issues.filter(shownIssue).forEach(i => {
     if (i.state !== "open") add(-1, "Done", i);
     else if (i.in_cycle) add(9999, "Cycle — needs untangling", i);
     else add(i.layer, i.layer === 0 ? "Ready now" : i.layer === 1 ? "Next" : "Wave " + (i.layer + 1), i);
@@ -382,12 +454,14 @@ function layoutSchedule() {
 function relayout() {
   applyVisibility();
   if (state.view === "graph") layoutGraph(); else layoutSchedule();
-  if (state.selected && byN.get(state.selected) && visibleIssue(byN.get(state.selected))) {
+  if (state.path !== null) {
+    highlightPath(state.path);
+  } else if (state.selected && byN.get(state.selected) && visibleIssue(byN.get(state.selected))) {
     highlight(state.selected);
   } else {
     clearHighlight();
   }
-  cy.fit(cy.nodes().not(".gone"), 40);
+  cy.fit(state.path !== null ? cy.nodes().not(".faded, .header, .gone") : cy.nodes().not(".gone"), 40);
   labelMode();
   applyMine();
 }
@@ -395,14 +469,34 @@ function relayout() {
 // --- Highlight rules
 function clearHighlight() {
   cy.batch(() => {
-    cy.elements().removeClass("faded in out");
+    cy.elements().removeClass("faded in out done-path");
     cy.nodes().unselect();
   });
 }
+// The nodes that stand for an issue on the canvas: itself, or for an epic its sub-issues too.
+function standIns(n) {
+  const i = byN.get(n);
+  const ids = isEpic(i) ? [n, ...kidsOf.get(n)] : [n];
+  return cy.collection(ids.map(x => cy.getElementById("i" + x))).not(".gone");
+}
 function highlight(n) {
   const node = cy.getElementById("i" + n);
+  if (isEpic(byN.get(n))) {
+    // Epic: light up its sub-issues and the dependencies between them.
+    const nodes = standIns(n);
+    cy.batch(() => {
+      cy.elements().removeClass("in out done-path");
+      const edges = nodes.edgesWith(nodes).not(".suggested").addClass("in");
+      const keep = nodes.union(edges).union(cy.nodes(".header"));
+      cy.elements().not(keep).addClass("faded");
+      keep.removeClass("faded");
+      cy.nodes().unselect();
+      nodes.select();
+    });
+    return;
+  }
   cy.batch(() => {
-    cy.elements().removeClass("in out");
+    cy.elements().removeClass("in out done-path");
     const outE = node.outgoers("edge").filter(e => !e.target().hasClass("gone"));
     const inE = node.incomers("edge").filter(e => !e.source().hasClass("gone"));
     outE.addClass("out");
@@ -413,6 +507,43 @@ function highlight(n) {
     cy.nodes().unselect();
     node.select();
   });
+}
+// Path mode: the issue plus everything it waits on, with the declared edges between them. No downstream edges.
+function highlightPath(n) {
+  const set = pathTo(n);
+  const inSet = nd => set.has(nd.data("n"));
+  cy.batch(() => {
+    cy.elements().removeClass("in out done-path");
+    const nodes = cy.nodes().not(".header").filter(inSet);
+    const edges = cy.edges().not(".suggested").filter(e => inSet(e.source()) && inSet(e.target()));
+    edges.addClass("in");
+    nodes.filter(nd => byN.get(nd.data("n")).state !== "open").addClass("done-path");
+    edges.filter(e => byN.get(e.source().data("n")).state !== "open").addClass("done-path");
+    const keep = nodes.union(edges).union(cy.nodes(".header"));
+    cy.elements().not(keep).addClass("faded");
+    keep.removeClass("faded");
+    cy.nodes().unselect();
+    cy.getElementById("i" + n).select();
+  });
+}
+// Re-layout only when the path brings in (or drops) closed issues that "Show closed" hides.
+const pathHidesSome = n => [...pathTo(n)].some(x => onCanvas(byN.get(x)) && !visibleIssue(byN.get(x)));
+function showPath(n) {
+  state.path = n;
+  state.selected = n;
+  if (pathHidesSome(n)) relayout();
+  else {
+    highlightPath(n);
+    cy.animate({ fit: { eles: cy.nodes().not(".faded, .header, .gone"), padding: 60 } }, { duration: 250 });
+  }
+  renderPath(n);
+}
+function exitPath() {
+  if (state.path === null) return;
+  const n = state.path;
+  state.path = null;
+  if (pathHidesSome(n)) relayout();
+  else clearHighlight();
 }
 function applyMine() {
   if (!state.mine || state.selected) return;
@@ -428,14 +559,17 @@ function applyMine() {
 function select(n, center) {
   const i = byN.get(n);
   if (!i) return;
+  exitPath();
   if (!visibleIssue(i)) { state.showClosed = true; setPressed("tClosed", true); relayout(); }
   state.selected = n;
   highlight(n);
   renderIssue(i);
-  if (center) cy.animate({ center: { eles: cy.getElementById("i" + n) }, zoom: Math.max(cy.zoom(), 0.9) }, { duration: 250 });
+  if (center && isEpic(i)) { const s = standIns(n); if (s.length) cy.animate({ fit: { eles: s, padding: 60 } }, { duration: 250 }); }
+  else if (center) cy.animate({ center: { eles: cy.getElementById("i" + n) }, zoom: Math.max(cy.zoom(), 0.9) }, { duration: 250 });
 }
 function deselect() {
   state.selected = null;
+  exitPath();
   clearHighlight();
   applyMine();
   renderOverview();
@@ -462,7 +596,8 @@ const tip = document.getElementById("tip");
 cy.on("mouseover", "node", e => {
   if (e.target.hasClass("header")) return;
   const i = byN.get(e.target.data("n"));
-  tip.innerHTML = `<b>#${i.n}</b>${esc(i.title)}<div class="muted" style="margin-top:3px">${esc(statusText(i))}${i.assignees.length ? " · " + esc(i.assignees.join(", ")) : ""}</div>`;
+  const ep = i.parent && byN.get(i.parent);
+  tip.innerHTML = `<b>#${i.n}</b>${esc(i.title)}<div class="muted" style="margin-top:3px">${esc(statusText(i))}${i.assignees.length ? " · " + esc(i.assignees.join(", ")) : ""}${ep ? ` · in #${ep.n} ${esc(trunc(ep.title, 32))}` : ""}</div>`;
   tip.style.display = "block";
 });
 cy.on("mouseover", "edge", e => {
@@ -495,7 +630,7 @@ function renderOverview() {
   let pickTitle = "Pick next";
   if (!picks.length) {
     pickTitle = "Pick next · by score";
-    picks = DATA.issues.filter(i => i.state === "open" && i.status === "ready" && !i.in_cycle)
+    picks = DATA.issues.filter(i => isWork(i) && i.status === "ready" && !i.in_cycle)
       .sort((a, b) => sortKey(a) - sortKey(b)).slice(0, 5)
       .map(i => ({ i, why: i.unblocks_total ? `Unblocks ${i.unblocks_now} now, ${i.unblocks_total} in total` : "" }));
   }
@@ -579,8 +714,10 @@ function trendChart(hist) {
 function renderIssue(i) {
   const parts = [];
   const st = statusText(i);
+  const epic = isEpic(i) ? epicProgress(i) : null;
   const statusLine = i.state !== "open"
     ? `Closed ${ago(i.closed)}${i.reason ? " as " + esc(i.reason.replace("_", " ")) : ""}`
+    : epic ? (epic.done === epic.kids.length ? "Epic: every sub-issue is closed, ready to close" : `Epic: ${epic.done} of ${epic.kids.length} sub-issues done`)
     : i.in_cycle ? "Part of a dependency cycle"
     : i.status === "ready" ? "Ready to pick: no open blockers"
     : `Blocked by ${i.open_blockers.length} open issue${i.open_blockers.length > 1 ? "s" : ""}`;
@@ -592,7 +729,21 @@ function renderIssue(i) {
     <h2 class="issue-title">${esc(i.title)}</h2>
     <div class="gh">${esc(statusLine)} · <a href="${esc(i.url)}" target="_blank" rel="noopener">Open on GitHub ↗</a></div>
     ${pick ? `<p class="summary changed" style="margin-top:12px">${esc(pick.why || "Recommended pick")}</p>` : ""}
+    ${i.blocked_by.length || epic ? (() => {
+      const work = [...pathTo(i.n)].filter(x => x !== i.n && !isEpic(byN.get(x)));
+      const open = work.filter(x => byN.get(x).state === "open").length, done = work.length - open;
+      return `<button class="chip path-btn" id="pathBtn">${epic ? "Show path to finish epic" : "Show path to unlock"} · ${open} open${done ? `, ${done} done` : ""}</button>`;
+    })() : ""}
   </div>`);
+
+  if (epic) {
+    const pct = epic.kids.length ? Math.round(100 * epic.done / epic.kids.length) : 0;
+    const order = { ready: 0, blocked: 1, cycle: 2, closed: 3 };
+    const rows = epic.kids.slice().sort((a, b) => (order[statusText(a)] ?? 1) - (order[statusText(b)] ?? 1) || a.n - b.n)
+      .map(k => issueRow(k).replace('class="row"', `class="row${k.state === "open" ? "" : " done"}"`)).join("");
+    parts.push(`<div class="sec"><h3>Sub-issues · ${epic.done}/${epic.kids.length} done</h3>
+      <div class="bar"><i style="width:${pct}%"></i></div>${rows}</div>`);
+  }
 
   if (changedSet.has(i.n) && !ch.first_run) {
     const bits = [];
@@ -619,11 +770,18 @@ function renderIssue(i) {
     <dt>Comments</dt><dd>${i.comments}</dd>
   </dl></div>`);
 
-  if (i.state === "open") {
+  if (i.state === "open" && !epic) {
+    const direct =i.blocking.filter(b => byN.get(b) && byN.get(b).state === "open");
+    const waiting = direct.length - i.unblocks_now;
     parts.push(`<div class="sec"><h3>Impact</h3><div class="impact">
-      <div><b>${i.unblocks_now}</b><span>freed when this closes</span></div>
+      <div><b>${direct.length}</b><span>directly blocks</span></div>
+      <div><b>${i.unblocks_now}</b><span>ready once this closes</span></div>
       <div><b>${i.unblocks_total}</b><span>downstream in total</span></div>
-      <div><b>${i.open_blockers.length}</b><span>open blockers</span></div></div></div>`);
+      <div><b>${i.open_blockers.length}</b><span>open blockers</span></div></div>
+      ${waiting > 0 ? `<p class="muted" style="margin:10px 0 0;font-size:12px">${
+        waiting < direct.length ? `${waiting} of the ${direct.length} issues it blocks ${waiting > 1 ? "are" : "is"} also waiting on other open issues.`
+        : direct.length > 1 ? `All ${direct.length} issues it blocks are also waiting on other open issues, so none become ready when this closes.`
+        : `The issue it blocks is also waiting on other open issues, so it stays blocked when this closes.`}</p>` : ""}</div>`);
   }
 
   const prHtml = i.prs.map(p => {
@@ -652,11 +810,50 @@ function renderIssue(i) {
   panel.innerHTML = parts.join("");
   panel.scrollTop = 0;
   document.getElementById("back").onclick = deselect;
+  const pb = document.getElementById("pathBtn");
+  if (pb) pb.onclick = () => showPath(i.n);
+}
+
+function renderPath(n) {
+  const i = byN.get(n);
+  const { steps, done } = pathSteps(n);
+  const epic = isEpic(i);
+  // For an issue the last step is the issue itself; an epic has no step of its own.
+  const before = steps.flat().filter(x => x.n !== n);
+  const nSteps = epic ? steps.length : steps.length - 1;
+  const row = (x, why) => issueRow(x, why).replace('class="row"', `class="row${x.state === "open" ? "" : " done"}" data-focus="1"`);
+  const parts = [];
+  parts.push(`<div class="sec">
+    <button class="back" id="back">← #${n}</button>
+    <div class="issue-head"><span class="n">${epic ? "Path to finish" : "Path to"} #${n}</span></div>
+    <h2 class="issue-title">${esc(i.title)}</h2>
+    <p class="summary muted">${before.length
+      ? `${before.length} open issue${before.length > 1 ? "s" : ""} to finish${epic ? "" : " first"}, in ${nSteps} step${nSteps > 1 ? "s" : ""}.`
+      : epic ? "Every sub-issue is done." : "Nothing open stands in the way."}${done.length ? ` ${done.length} already done, shown dimmed.` : ""}</p>
+  </div>`);
+  const body = steps.map((g, k) => {
+    const last = k === steps.length - 1 && !epic;
+    const title = k === 0 ? "Start here" : last ? "Finally" : "Step " + (k + 1);
+    return `<div class="step">${title}</div>` + g.map(x => row(x, x.n === n ? "Target" : "")).join("");
+  }).join("");
+  parts.push(`<div class="sec"><h3>Order of work</h3>${body || `<div class="empty">Nothing left to do.</div>`}</div>`);
+  if (done.length) parts.push(`<div class="sec"><h3>Already done · ${done.length}</h3>${done.map(x => row(x)).join("")}</div>`);
+  panel.innerHTML = parts.join("");
+  panel.scrollTop = 0;
+  document.getElementById("back").onclick = () => select(n, false);
 }
 
 panel.addEventListener("click", e => {
   const t = e.target.closest("[data-n]");
-  if (t && !e.target.closest("a[href]")) select(Number(t.dataset.n), true);
+  if (!t || e.target.closest("a[href]")) return;
+  const n = Number(t.dataset.n);
+  // Rows in the path list only move the view; they keep path mode on.
+  if (t.dataset.focus && state.path !== null) {
+    cy.animate({ center: { eles: cy.getElementById("i" + n) }, zoom: Math.max(cy.zoom(), 0.9) }, { duration: 250 });
+    cy.nodes().unselect(); cy.getElementById("i" + n).select();
+    return;
+  }
+  select(n, true);
 });
 
 // ---------------------------------------------------------------- controls
